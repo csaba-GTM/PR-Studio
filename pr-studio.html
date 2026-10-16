@@ -253,7 +253,8 @@ input[type=text].num{font-family:var(--mono)}
 .tsb .prize{position:absolute;left:45px;top:309.2px;width:446px;transform:translateY(-50%);display:flex;flex-direction:column;align-items:flex-start;gap:11.5px}
 .tsb .vgroup{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
 .tsb .value{font-weight:800;font-size:119.69px;line-height:119.69px;white-space:nowrap;color:#fbbf2e;background:linear-gradient(180deg,#faf149 -12.41px,#f8962a 119.69px);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.tsb .coins{font-weight:800;font-size:38px;line-height:38px;white-space:nowrap}
+/* wraps inside the 446 px text column; 44 px lines with -3 px margins keep a single line at the Figma 38 px box */
+.tsb .coins{width:446px;font-weight:800;font-size:38px;line-height:44px;margin:-3px 0;overflow-wrap:anywhere;text-wrap:balance}
 .tsb .gname{width:446px;font-weight:600;font-size:39px;line-height:46px;color:#ffb145;overflow-wrap:anywhere}
 /* Details row */
 .tsb .details{position:absolute;left:48px;top:490px;display:flex;gap:30px;align-items:center}
@@ -591,9 +592,17 @@ input[type=text].num{font-family:var(--mono)}
         <h3 id="ts-h-prize">Prize &amp; game</h3>
         <div class="row2">
           <div class="field"><label for="ts-in-value">Value</label><div class="affix"><span aria-hidden="true">$</span><input type="text" id="ts-in-value" inputmode="decimal" spellcheck="false" autocomplete="off" placeholder="500"></div></div>
-          <div class="field"><label for="ts-in-coins">Coin value</label><input type="text" id="ts-in-coins" spellcheck="false" autocomplete="off"></div>
+          <div class="field"><label for="ts-in-coins">Coin value</label><input type="text" id="ts-in-coins" inputmode="decimal" spellcheck="false" autocomplete="off" placeholder="20"></div>
         </div>
-        <p class="hint">The $ is added for you. Leave the value empty or 0 to hide it. The coin value shows as “+ [coin value] Coins Tournament”; leave it empty to hide that line.</p>
+        <div class="field">
+          <span class="lbl" id="ts-lbl-unit">Coin unit</span>
+          <div class="seg" role="radiogroup" aria-labelledby="ts-lbl-unit">
+            <label><input type="radio" name="ts-unit" value="K" checked>K</label>
+            <label><input type="radio" name="ts-unit" value="M">M</label>
+            <label><input type="radio" name="ts-unit" value="">None</label>
+          </div>
+        </div>
+        <p class="hint">Type numbers only. The $, the thousands commas and the unit are added for you. The coins show as “+ [coins] Coins Tournament”. Leave a field empty or 0 to hide that line.</p>
         <div class="field"><label for="ts-in-game">Game name</label><input type="text" id="ts-in-game" spellcheck="false" autocomplete="off"></div>
         <div class="field">
           <span class="lbl" id="ts-lbl-icon">Game icon</span>
@@ -1400,7 +1409,16 @@ const state = {
   example: { icon: true, frames: true }
 };
 // Prize value without the $ sign; '' when empty or zero (then the line is hidden)
-function prizeValue(){ const v = $('in-value').value.replace(/\$/g, '').trim(); return /^[0.,\s]*$/.test(v) ? '' : v; }
+/* numbers: keep digits, add thousands commas; '' when empty or zero (then the line is hidden) */
+function fmtNum(raw){
+  const v = raw.replace(/[$\s]/g, '').replace(/,/g, '');
+  if(!v || /^0*([.]0*)?$/.test(v)) return '';
+  const m = v.match(/^(\d+)(\.\d+)?$/);
+  if(!m) return raw.trim();
+  return m[1].replace(/^0+(?=\d)/, '').replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (m[2] || '');
+}
+const prizeValue = () => fmtNum($('in-value').value);
+const coinValue = () => { const c = fmtNum($('in-coins').value); return c ? c + radio('unit') : ''; };
 const radio = name => document.querySelector(`input[name="${P}${name}"]:checked`).value;  // (kept for the shared page helpers)
 
 /* ---------- files ---------- */
@@ -1530,7 +1548,7 @@ function providerImgHTML(kind){
 function paint(el, type){
   el.dataset.type = type;
   const icon = type === 'last' ? ICON_CLOCK : type === 'special' ? ICON_DIAMOND : ICON_TROPHY;
-  const coins = $('in-coins').value.trim(), value = prizeValue();
+  const coins = coinValue(), value = prizeValue();
   const frames = Z_ORDER.map(r => {
     const num = +Object.keys(SLOT_OF).find(k => SLOT_OF[k] === r); const f = num ? state.frames[num - 1] : null;
     return `<div class="frame" style="transform:matrix(${FRAME_M[r].join(',')})">${f ? `<img src="${f.src}" alt="">` : ''}</div>`;
@@ -1595,14 +1613,16 @@ function check(type){
     if(!state.icon) errors.push('Add the game icon.');
     const v = b.querySelector('.value'), c = b.querySelector('.coins'), g = b.querySelector('.gname');
     if(v && v.offsetWidth > 446) errors.push(`The value is ${v.offsetWidth} px wide; the space is 446 px. Shorten it (e.g. $10K).`);
-    if(c && c.offsetWidth > 446) errors.push(`The coins line is ${c.offsetWidth} px wide; the space is 446 px. Shorten the coin value.`);
+    const clines = c ? Math.round((c.offsetHeight + 6) / 44) : 0;
+    const pz = b.querySelector('.prize'); if(pz && pz.offsetTop + pz.offsetHeight / 2 > 482) errors.push('The prize text runs into the entry details. Shorten the coin value or the game name.');
+    if(clines > 2) errors.push(`The coins line needs ${clines} lines; the maximum is 2. Shorten the coin value (e.g. 1.03 with M).`);
     const lines = g && game ? Math.round(g.offsetHeight / 46) : 0;
     if(lines > 2) errors.push(`The game name needs ${lines} lines; the maximum is 2. Shorten it.`);
     if(state.icon && state.icon.natural){ const up = Math.min(325 / state.icon.natural.w, 325 / state.icon.natural.h);
       if(up > 1.5) warns.push(`The game icon is enlarged ${up.toFixed(1)}× and may look soft. Use a larger image.`); }
     if(state.example.icon) warns.push('Example content is loaded. Replace the game icon and text with this tournament’s.');
     chips.push(['Value', v ? `${v.offsetWidth} / 446 px` : 'hidden', v && v.offsetWidth > 446 ? 'bad' : 'ok']);
-    chips.push(['Coins', $('in-coins').value.trim() ? 'shown' : 'hidden', 'ok']);
+    chips.push(['Coins', c ? `${coinValue()} · ${clines} line${clines > 1 ? 's' : ''}` : 'hidden', clines > 2 ? 'bad' : 'ok']);
     chips.push(['Game name', lines ? `${lines} line${lines > 1 ? 's' : ''}` : '–', lines > 2 || !lines ? 'bad' : 'ok']);
   }
   chips.unshift(['Canvas', '898 × 620', 'ok']);
@@ -1666,7 +1686,8 @@ $('btn-dl').addEventListener('click', () => {
 $('btn-dl-lc').addEventListener('click', () => download($('banner-lc'), `tournament-last-chance-${slug(lastCheck.game) || 'game'}.png`, 'status', $('btn-dl-lc')));
 
 /* ---------- inputs ---------- */
-$('in-value').addEventListener('input', e => { if(e.target.value.includes('$')) e.target.value = e.target.value.replace(/\$/g, ''); });
+$('in-value').addEventListener('input', e => { if(/\$/.test(e.target.value)) e.target.value = e.target.value.replace(/\$/g, ''); });
+$('in-coins').addEventListener('input', e => { if(/[kKmM]/.test(e.target.value)) e.target.value = e.target.value.replace(/[kKmM]/g, ''); });
 ['in-value', 'in-coins', 'in-game', 'in-fee'].forEach(id => $(id).addEventListener('input', render));
 ['in-type', 'in-provider', 'in-month', 'in-entry'].forEach(id => $(id).addEventListener('change', render));
 ROOT.querySelectorAll('input[type=radio]').forEach(r => r.addEventListener('change', render));
@@ -1678,7 +1699,7 @@ for(const [boxId, scalerId] of [['scaler-box', 'scaler']]){
 
 /* ---------- start with the Figma example loaded ---------- */
 buildFrameUI();
-$('in-value').value = '500'; $('in-coins').value = '20k'; $('in-game').value = 'Book of Bamboo'; $('in-fee').value = '0';
+$('in-value').value = '500'; $('in-coins').value = '20'; $('in-game').value = 'Book of Bamboo'; $('in-fee').value = '0';
 $('in-provider').value = 'onlyplay';
 (async () => {
   try{
