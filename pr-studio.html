@@ -151,6 +151,23 @@ input[type=text].num{font-family:var(--mono)}
 .nl-coins{display:flex;gap:8px;align-items:stretch}
 .nl-coins input{min-width:0;flex:1}
 .nl-coins .seg label{padding:6px 10px}
+
+/* Searchable provider picker (wraps the native select, which stays the source of truth) */
+.combo{position:relative}
+.combo::after{content:"";position:absolute;right:16px;top:20px;width:7px;height:7px;margin-top:-6px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);pointer-events:none;transition:transform .12s}
+.combo.open::after{transform:rotate(225deg);margin-top:-2px}
+.combo input[type=text].combo-input{padding-right:40px;cursor:pointer;text-overflow:ellipsis}
+.combo.open input[type=text].combo-input{cursor:text;border-color:var(--accent)}
+.combo-list{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:30;margin:0;padding:4px;list-style:none;max-height:260px;overflow-y:auto;background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:0 12px 32px rgba(0,0,0,.5)}
+.combo-list[hidden]{display:none}
+.combo-list li{padding:8px 10px;border-radius:6px;cursor:pointer;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.combo-list li.active{background:color-mix(in srgb,var(--fg) 9%,transparent)}
+.combo-list li[aria-selected="true"]{font-weight:600}
+.combo-list li[aria-selected="true"]::before{content:"✓";display:inline-block;width:18px;color:var(--accent)}
+.combo-list li:not([aria-selected="true"])::before{content:"";display:inline-block;width:18px}
+.combo-list li.sep{border-top:1px solid var(--line);border-radius:0 0 6px 6px;margin-top:4px;padding-top:10px}
+.combo-list li.empty{color:var(--muted);cursor:default;font-style:italic}
+.combo-list mark{background:none;color:var(--accent);font-weight:700}
 </style>
 <!-- Banner stylesheets: the single source of truth for each layout. The preview uses them and the PNG export embeds exactly this CSS. -->
 <style id="nc-banner-css">
@@ -2014,6 +2031,68 @@ $('in-value').value = '2500'; $('in-coins').value = '150'; $('in-game').value = 
   } catch(e){}
   render();
 })();
+})();
+</script>
+<script>
+(() => {
+  const VALUE = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
+  const escH = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  function enhance(sel){
+    const wrap = sel.closest('.select-wrap'); if(!wrap || wrap.dataset.combo) return; wrap.dataset.combo = '1';
+    const box = document.createElement('div'); box.className = 'combo';
+    const input = document.createElement('input'); input.type = 'text'; input.className = 'combo-input';
+    input.id = sel.id + '-search'; input.autocomplete = 'off'; input.spellcheck = false; input.placeholder = 'Search providers…';
+    input.setAttribute('role', 'combobox'); input.setAttribute('aria-autocomplete', 'list'); input.setAttribute('aria-expanded', 'false');
+    const list = document.createElement('ul'); list.className = 'combo-list'; list.id = sel.id + '-list'; list.setAttribute('role', 'listbox'); list.hidden = true;
+    input.setAttribute('aria-controls', list.id);
+    const lab = document.querySelector(`label[for="${sel.id}"]`); if(lab) lab.htmlFor = input.id;
+    wrap.hidden = true; sel.tabIndex = -1; wrap.after(box); box.append(input, list);
+    let items = [], active = -1;
+    const label = () => (sel.selectedOptions[0] || {}).textContent || '';
+    const sync = () => { if(list.hidden) input.value = label(); };
+    function mark(){
+      [...list.children].forEach((li, i) => li.classList.toggle('active', i === active));
+      const li = list.children[active]; if(li){ input.setAttribute('aria-activedescendant', li.id); li.scrollIntoView({ block: 'nearest' }); } else input.removeAttribute('aria-activedescendant');
+    }
+    function build(q){
+      q = q.trim().toLowerCase(); list.replaceChildren(); items = [];
+      const opts = [...sel.options], custom = opts.filter(o => o.value.startsWith('__')), named = opts.filter(o => !o.value.startsWith('__'));
+      const hits = named.filter(o => !q || o.textContent.toLowerCase().includes(q));
+      if(!hits.length){ const li = document.createElement('li'); li.className = 'empty'; li.textContent = 'No provider matches – upload it as Custom'; li.setAttribute('aria-disabled', 'true'); list.append(li); }
+      [...hits, ...custom].forEach((o, i) => {
+        const li = document.createElement('li'); li.id = `${list.id}-${i}`; li.setAttribute('role', 'option');
+        const t = o.textContent, at = q ? t.toLowerCase().indexOf(q) : -1;
+        li.innerHTML = at >= 0 ? escH(t.slice(0, at)) + '<mark>' + escH(t.slice(at, at + q.length)) + '</mark>' + escH(t.slice(at + q.length)) : escH(t);
+        li.setAttribute('aria-selected', String(o.value === sel.value));
+        if(o.value.startsWith('__') && hits.length) li.classList.add('sep');
+        li.addEventListener('mousedown', e => { e.preventDefault(); choose(o.value); });
+        li.addEventListener('mousemove', () => { if(active !== items.indexOf(o)){ active = items.indexOf(o); mark(); } });
+        list.append(li); items.push(o);
+      });
+      // with no matching name the Custom row is the active one, so Enter picks it
+      active = q ? (hits.length ? 0 : items.length - 1) : Math.max(0, items.findIndex(o => o.value === sel.value));
+      mark();
+    }
+    function open(){ if(!list.hidden) return; box.classList.add('open'); list.hidden = false; input.setAttribute('aria-expanded', 'true'); input.value = ''; input.placeholder = label() || 'Search providers…'; build(''); }
+    function close(){ box.classList.remove('open'); list.hidden = true; input.setAttribute('aria-expanded', 'false'); input.placeholder = 'Search providers…'; input.value = label(); }
+    function choose(v){ const changed = sel.value !== v; VALUE.set.call(sel, v); close(); if(changed) sel.dispatchEvent(new Event('change', { bubbles: true })); }
+    input.addEventListener('mousedown', () => { if(document.activeElement === input && list.hidden) open(); });
+    input.addEventListener('focus', open);
+    input.addEventListener('blur', close);
+    input.addEventListener('input', () => { if(list.hidden) open(); build(input.value); });
+    input.addEventListener('keydown', e => {
+      if(e.key === 'ArrowDown' || e.key === 'ArrowUp'){ e.preventDefault(); if(list.hidden){ open(); return; }
+        if(!items.length) return; const n = items.length; active = active < 0 ? 0 : (active + (e.key === 'ArrowDown' ? 1 : n - 1)) % n; mark(); }
+      else if(e.key === 'Enter'){ e.preventDefault(); if(!list.hidden && items[active]) choose(items[active].value); else open(); }
+      else if(e.key === 'Escape'){ if(!list.hidden){ e.preventDefault(); close(); } }
+      else if(e.key === 'Tab'){ if(!list.hidden && input.value.trim() && items[active] && !items[active].value.startsWith('__')) choose(items[active].value); }
+    });
+    // the tab scripts set sel.value directly (examples, presets): keep the visible field in step
+    Object.defineProperty(sel, 'value', { configurable: true, get(){ return VALUE.get.call(this); }, set(v){ VALUE.set.call(this, v); sync(); } });
+    sel.addEventListener('change', sync);
+    input.value = label();
+  }
+  ['ep-in-provider', 'ts-in-provider', 'tn-in-prov1', 'tn-in-prov2', 'tn-in-prov3'].forEach(id => { const s = document.getElementById(id); if(s) enhance(s); });
 })();
 </script>
 <script>
