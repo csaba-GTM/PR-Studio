@@ -239,6 +239,24 @@ input[type=text].num{font-family:var(--mono)}
 .lr-modes small{font:400 11.5px/1.35 var(--ui);color:var(--muted)}
 .lr-modes label:has(input:checked){border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:rgba(var(--accent-rgb),.08)}
 .lr-modes label:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+.lr-opt{font-weight:400;color:var(--muted);margin-left:4px}
+.lr-tools{display:flex;gap:6px;flex-wrap:wrap}
+.lr-tools .lr-clear{margin-left:auto}
+.lr-sel{border-radius:10px;border:1px solid var(--line);padding:12px;display:grid;place-items:center;
+  background-color:#dfe3ea;background-image:linear-gradient(45deg,#c9ced8 25%,transparent 25%),linear-gradient(-45deg,#c9ced8 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#c9ced8 75%),linear-gradient(-45deg,transparent 75%,#c9ced8 75%);background-size:16px 16px;background-position:0 0,0 8px,8px -8px,-8px 0}
+.lr-stage{position:relative;line-height:0;overflow:hidden}
+.lr-stage canvas{display:block}
+.lr-ov{position:absolute;inset:0;touch-action:none}
+.lr-ov.box,.lr-ov.pick{cursor:crosshair}
+.lr-box{position:absolute;border:1.5px solid var(--accent);background:rgba(var(--accent-rgb),.14);border-radius:2px;pointer-events:none}
+.lr-box.draft{border-style:dashed}
+.lr-box button{pointer-events:auto;position:absolute;top:-1px;right:-1px;width:18px;height:18px;display:grid;place-items:center;border:0;border-radius:0 2px 0 4px;background:var(--accent);color:#fff;font:600 12px/1 var(--ui);cursor:pointer;padding:0}
+.lr-cols{display:flex;gap:6px;flex-wrap:wrap}
+.lr-cols[hidden],.lr-row[hidden],.lr-tools .lr-clear[hidden]{display:none}
+.lr-col{display:inline-flex;align-items:center;gap:6px;font:500 12px/1 var(--ui);color:var(--fg);background:none;border:1px solid var(--line-2);border-radius:7px;padding:4px 7px 4px 4px;cursor:pointer}
+.lr-col i{width:16px;height:16px;border-radius:4px;border:1px solid rgba(127,127,127,.35)}
+.lr-col span{color:var(--muted)}
+.lr-col:hover{border-color:var(--accent)}
 
 /* Searchable provider picker (wraps the native select, which stays the source of truth) */
 .combo{position:relative}
@@ -1289,6 +1307,18 @@ textarea:focus-visible,input:focus-visible,select:focus-visible{outline:none}
             <label><input type="radio" name="lr-mode" value="negative"><b>Negative</b><small>Flips every colour</small></label>
             <label><input type="radio" name="lr-mode" value="mono"><b>One colour</b><small>All white or all black</small></label>
           </div>
+        </div>
+        <div class="field" id="lr-selbox" hidden>
+          <span class="lbl">Convert only part of the logo <small class="lr-opt">optional</small></span>
+          <div class="lr-tools">
+            <button class="lr-mini" id="lr-tool-box" type="button" aria-pressed="false">Draw area</button>
+            <button class="lr-mini" id="lr-tool-pick" type="button" aria-pressed="false">Pick colour</button>
+            <button class="lr-mini lr-clear" id="lr-sel-clear" type="button" hidden>Clear selection</button>
+          </div>
+          <div class="lr-sel"><div class="lr-stage" id="lr-selstage"><canvas id="lr-selc" width="1" height="1"></canvas><div class="lr-ov" id="lr-selov"></div></div></div>
+          <div class="lr-cols" id="lr-selcols" hidden></div>
+          <div class="lr-row" id="lr-seltolrow" hidden><span>Tolerance</span><input type="range" id="lr-seltol" min="1" max="60" value="18" aria-label="Colour tolerance"><output id="lr-seltolo">18</output></div>
+          <p class="hint" id="lr-selhint"></p>
         </div>
         <div class="field">
           <label for="lr-in-name">File name</label>
@@ -3051,14 +3081,14 @@ function trim(c){
   let x0 = w, y0 = h, x1 = -1, y1 = -1;
   for(let y = 0; y < h; y++) for(let x = 0; x < w; x++) if(d[(y * w + x) * 4 + 3] > 8){ if(x < x0) x0 = x; if(x > x1) x1 = x; if(y < y0) y0 = y; if(y > y1) y1 = y; }
   if(x1 < 0) return null;
-  const o = cv(x1 - x0 + 1, y1 - y0 + 1); o.getContext('2d').drawImage(c, x0, y0, o.width, o.height, 0, 0, o.width, o.height); return o;
+  const o = cv(x1 - x0 + 1, y1 - y0 + 1); o.getContext('2d').drawImage(c, x0, y0, o.width, o.height, 0, 0, o.width, o.height); o._ox = x0; o._oy = y0; return o;
 }
 /* colour conversion for the generated version; target = 'light' (logo for light backgrounds) or 'dark' */
 function rgb2hsl(r, g, b){ r /= 255; g /= 255; b /= 255; const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2; let h = 0, s = 0;
   if(mx !== mn){ const d = mx - mn; s = l > .5 ? d / (2 - mx - mn) : d / (mx + mn); h = mx === r ? (g - b) / d + (g < b ? 6 : 0) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h /= 6; } return [h, s, l]; }
 function hsl2rgb(h, s, l){ if(!s) return [l * 255, l * 255, l * 255]; const q = l < .5 ? l * (1 + s) : l + s - l * s, p = 2 * l - q;
   const f = t => { t = (t + 1) % 1; return 255 * (t < 1/6 ? p + (q - p) * 6 * t : t < 1/2 ? q : t < 2/3 ? p + (q - p) * (2/3 - t) * 6 : p); }; return [f(h + 1/3), f(h), f(h - 1/3)]; }
-function convert(src, mode, target){
+function convert(src, mode, target, mask){
   const { width: w, height: h } = src, out = cv(w, h), g = ctx2(out); g.drawImage(src, 0, 0);
   const im = g.getImageData(0, 0, w, h), d = im.data, mono = target === 'dark' ? 255 : 0;
   for(let i = 0; i < d.length; i += 4){
@@ -3073,6 +3103,7 @@ function convert(src, mode, target){
         o = [r + (inv[0] - r) * k, gg + (inv[1] - gg) * k, b + (inv[2] - b) * k];
       }
     }
+    if(mask){ const m = mask[i >> 2]; if(!m) continue; if(m < 1) o = [r + (o[0] - r) * m, gg + (o[1] - gg) * m, b + (o[2] - b) * m]; }
     d[i] = o[0]; d[i + 1] = o[1]; d[i + 2] = o[2];
   }
   g.putImageData(im, 0, 0); return out;
@@ -3095,13 +3126,84 @@ function lightness(c){
 const lum = hex => { const v = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255).map(x => x <= .03928 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4); return .2126 * v[0] + .7152 * v[1] + .0722 * v[2]; };
 const hexOf = c => '#' + c.map(v => Math.round(v).toString(16).padStart(2, '0')).join('');
 
+/* ---------- partial conversion: boxes (in source-image fractions) and picked colours ---------- */
+const SEL = { boxes: [], colors: [], tol: 18, tool: null, draft: null };
+const resetSel = () => { SEL.boxes = []; SEL.colors = []; SEL.tool = null; SEL.draft = null; };
+function buildMask(s){
+  const c = s.clean; if(!c || (!SEL.boxes.length && !SEL.colors.length)) return null;
+  const w = c.width, h = c.height, SW = s.src.width, SH = s.src.height, ox = c._ox || 0, oy = c._oy || 0;
+  const d = ctx2(c).getImageData(0, 0, w, h).data, m = new Float32Array(w * h);
+  const bx = SEL.boxes.map(b => [b.x0 * SW - ox, b.y0 * SH - oy, b.x1 * SW - ox, b.y1 * SH - oy]);
+  const t1 = SEL.tol * 4.41, t0 = t1 * .6;
+  for(let y = 0; y < h; y++) for(let x = 0; x < w; x++){
+    const p = y * w + x, i = p * 4; if(!d[i + 3]) continue;
+    if(bx.length && !bx.some(b => x + .5 >= b[0] && x + .5 <= b[2] && y + .5 >= b[1] && y + .5 <= b[3])) continue;
+    let wgt = 1;
+    if(SEL.colors.length){ wgt = 0; for(const col of SEL.colors){ const dist = Math.hypot(d[i] - col[0], d[i + 1] - col[1], d[i + 2] - col[2]);
+      const v = dist <= t0 ? 1 : dist >= t1 ? 0 : (t1 - dist) / (t1 - t0); if(v > wgt) wgt = v; } }
+    m[p] = wgt;
+  }
+  return m;
+}
+function drawSel(s){
+  const c = $('selc'), ov = $('selov'); ov.className = 'lr-ov' + (SEL.tool ? ' ' + SEL.tool : '');
+  if(!s || !s.clean){ ov.replaceChildren(); return; }
+  const src = s.clean, box = $('selstage').parentElement, maxW = Math.max(120, box.clientWidth - 26), maxH = 200;
+  const sc = Math.min(maxW / src.width, maxH / src.height, 4), dw = Math.max(1, Math.round(src.width * sc)), dh = Math.max(1, Math.round(src.height * sc));
+  const dpr = window.devicePixelRatio || 1; c.width = Math.round(dw * dpr); c.height = Math.round(dh * dpr); c.style.width = dw + 'px'; c.style.height = dh + 'px';
+  drawContain(c, src);
+  const SW = s.src.width, SH = s.src.height, ox = src._ox || 0, oy = src._oy || 0;
+  const place = (el, b) => { el.style.left = ((b.x0 * SW - ox) / src.width * 100) + '%'; el.style.top = ((b.y0 * SH - oy) / src.height * 100) + '%';
+    el.style.width = ((b.x1 - b.x0) * SW / src.width * 100) + '%'; el.style.height = ((b.y1 - b.y0) * SH / src.height * 100) + '%'; };
+  const els = SEL.boxes.map((b, n) => { const el = document.createElement('div'); el.className = 'lr-box'; place(el, b);
+    const x = document.createElement('button'); x.type = 'button'; x.textContent = '×'; x.title = 'Remove this area'; x.setAttribute('aria-label', 'Remove area ' + (n + 1));
+    x.addEventListener('pointerdown', e => e.stopPropagation()); x.addEventListener('click', () => { SEL.boxes.splice(n, 1); render(); }); el.append(x); return el; });
+  if(SEL.draft){ const el = document.createElement('div'); el.className = 'lr-box draft'; place(el, SEL.draft); els.push(el); }
+  ov.replaceChildren(...els);
+}
+// overlay position -> fraction of the source image
+function ovToSrc(e, s){
+  const r = $('selov').getBoundingClientRect(), src = s.clean;
+  const cx = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)) * src.width, cy = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height)) * src.height;
+  return { cx, cy, fx: (cx + (src._ox || 0)) / s.src.width, fy: (cy + (src._oy || 0)) / s.src.height };
+}
+const selSource = () => { const filled = KEYS.filter(k => S[k] && S[k].clean); return filled.length === 1 ? S[filled[0]] : null; };
+(() => {
+  const ov = $('selov'); let start = null;
+  ov.addEventListener('pointerdown', e => {
+    const s = selSource(); if(!s || !SEL.tool) return; e.preventDefault();
+    const pt = ovToSrc(e, s);
+    if(SEL.tool === 'pick'){
+      const px = ctx2(s.clean).getImageData(Math.min(s.clean.width - 1, Math.floor(pt.cx)), Math.min(s.clean.height - 1, Math.floor(pt.cy)), 1, 1).data;
+      if(px[3] < 40){ setStatus('That spot is transparent. Click on the logo itself.', true); return; }
+      setStatus('');
+      if(!SEL.colors.some(c => Math.hypot(c[0] - px[0], c[1] - px[1], c[2] - px[2]) < 12)) SEL.colors.push([px[0], px[1], px[2]]);
+      render(); return;
+    }
+    start = pt; ov.setPointerCapture(e.pointerId); SEL.draft = { x0: pt.fx, y0: pt.fy, x1: pt.fx, y1: pt.fy }; drawSel(s);
+  });
+  ov.addEventListener('pointermove', e => { const s = selSource(); if(!start || !s) return; const pt = ovToSrc(e, s);
+    SEL.draft = { x0: Math.min(start.fx, pt.fx), y0: Math.min(start.fy, pt.fy), x1: Math.max(start.fx, pt.fx), y1: Math.max(start.fy, pt.fy) }; drawSel(s); });
+  const end = () => { if(!start) return; const s = selSource(), b = SEL.draft; start = null; SEL.draft = null;
+    if(s && b){ const r = $('selov').getBoundingClientRect(), sw = (b.x1 - b.x0) * s.src.width / s.clean.width * r.width, sh = (b.y1 - b.y0) * s.src.height / s.clean.height * r.height;
+      if(sw > 4 && sh > 4) SEL.boxes.push(b); }
+    render(); };
+  ov.addEventListener('pointerup', end); ov.addEventListener('pointercancel', end);
+  $('tool-box').addEventListener('click', () => { SEL.tool = SEL.tool === 'box' ? null : 'box'; render(); });
+  $('tool-pick').addEventListener('click', () => { SEL.tool = SEL.tool === 'pick' ? null : 'pick'; render(); });
+  $('sel-clear').addEventListener('click', () => { const t = SEL.tool; resetSel(); SEL.tool = t; render(); });
+  let tt = null;
+  $('seltol').addEventListener('input', e => { SEL.tol = +e.target.value; $('seltolo').textContent = e.target.value; clearTimeout(tt); tt = setTimeout(render, 40); });
+  window.addEventListener('resize', () => drawSel(selSource()));
+})();
+
 /* ---------- slots ---------- */
 async function load(k, file){
   const { canvas, vector, natural } = await fileToCanvas(file), det = detectBg(canvas);
   const on = det.opaqueBorder > .6;          // an opaque border means there is a background to remove
   S[k] = { label: file.name, vector, natural, src: canvas, bg: { on, tol: 12, inside: false, color: det.color, uniform: det.uniform }, picking: false, opaque: det.opaqueBorder };
   if(!$('in-name').value.trim()) $('in-name').value = file.name.replace(/\.[^.]+$/, '').toLowerCase().replace(/[-_ ]*(logo|light|dark|white|black|color|colour)\b/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'logo';
-  clean(k);
+  resetSel(); clean(k);
 }
 function clean(k){ const s = S[k]; if(!s) return; s.clean = trim(s.bg.on ? removeBg(s.src, s.bg) : s.src); }
 function wireSlot(k){
@@ -3112,7 +3214,7 @@ function wireSlot(k){
   drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over'); });
   drop.addEventListener('dragleave', () => drop.classList.remove('over'));
   drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('over'); if(e.dataTransfer.files.length) go([...e.dataTransfer.files]); });
-  $('rm-' + k).addEventListener('click', () => { S[k] = null; render(); });
+  $('rm-' + k).addEventListener('click', () => { S[k] = null; resetSel(); render(); });
   $('bgon-' + k).addEventListener('change', e => { S[k].bg.on = e.target.checked; clean(k); render(); });
   $('inside-' + k).addEventListener('change', e => { S[k].bg.inside = e.target.checked; clean(k); render(); });
   let t = null;
@@ -3124,7 +3226,7 @@ function wireSlot(k){
     const x = Math.floor((e.clientX - r.left) / r.width * s.src.width), y = Math.floor((e.clientY - r.top) / r.height * s.src.height);
     const px = ctx2(s.src).getImageData(x, y, 1, 1).data; s.bg.color = [px[0], px[1], px[2]]; s.bg.on = true; s.picking = false; clean(k); render();
   });
-  $('swap-' + k).addEventListener('click', () => { [S.light, S.dark] = [S.dark, S.light]; render(); });
+  $('swap-' + k).addEventListener('click', () => { [S.light, S.dark] = [S.dark, S.light]; resetSel(); render(); });
 }
 KEYS.forEach(wireSlot);
 
@@ -3163,7 +3265,7 @@ function render(){
   for(const k of KEYS){
     let srcC = null, generated = false;
     if(S[k] && S[k].clean) srcC = S[k].clean;
-    else if(S[OTHER[k]] && S[OTHER[k]].clean){ srcC = convert(S[OTHER[k]].clean, mode, k); generated = true; }
+    else if(S[OTHER[k]] && S[OTHER[k]].clean){ srcC = convert(S[OTHER[k]].clean, mode, k, buildMask(S[OTHER[k]])); generated = true; }
     $('gen-' + k).hidden = !generated;
     const bg = $('bg-' + k).value; $('tile-' + k).style.background = bg; $('tile-' + k).style.color = lum(bg) > .4 ? '#0f172a' : '#f4f4f5';
     if(srcC){
@@ -3176,6 +3278,22 @@ function render(){
       chips.push([k === 'light' ? 'Light' : 'Dark', `${f.tw} × ${f.th} in 124 × 82${generated ? ' · generated' : ''}`, 'ok']);
     } else { OUT[k] = null; { const c = $('out-' + k); c.getContext('2d').clearRect(0, 0, c.width, c.height); } }
   }
+  const ss = selSource(); $('selbox').hidden = !ss;
+  if(ss){
+    $('tool-box').setAttribute('aria-pressed', String(SEL.tool === 'box')); $('tool-pick').setAttribute('aria-pressed', String(SEL.tool === 'pick'));
+    $('sel-clear').hidden = !SEL.boxes.length && !SEL.colors.length;
+    $('selcols').hidden = !SEL.colors.length; $('seltolrow').hidden = !SEL.colors.length;
+    $('selcols').replaceChildren(...SEL.colors.map((c, n) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'lr-col'; b.title = 'Remove this colour';
+      const sw = document.createElement('i'); sw.style.background = hexOf(c); const t = document.createElement('span'); t.textContent = '×';
+      b.append(sw, hexOf(c).toUpperCase(), t); b.addEventListener('click', () => { SEL.colors.splice(n, 1); render(); }); return b; }));
+    const nb = SEL.boxes.length, nc = SEL.colors.length;
+    $('selhint').textContent = SEL.tool === 'box' ? 'Drag on the logo to draw an area. Draw as many as you need.'
+      : SEL.tool === 'pick' ? 'Click a colour in the logo to convert only that colour.'
+      : !nb && !nc ? 'Nothing selected: the whole logo is converted.'
+      : nb && nc ? `Converting the picked colour${nc > 1 ? 's' : ''} inside ${nb} area${nb > 1 ? 's' : ''}.`
+      : nb ? `Converting inside ${nb} area${nb > 1 ? 's' : ''} only.` : `Converting the picked colour${nc > 1 ? 's' : ''} only.`;
+    drawSel(ss);
+  } else SEL.tool = null;
   if(!have.length) errors.push('Upload a logo (light-mode, dark-mode or both).');
   chips.unshift(['Size', '124 × 82', 'ok']);
   $('qa').replaceChildren(...chips.map(([k, v, c]) => { const el = document.createElement('span'); el.className = 'chip ' + c; const bb = document.createElement('b'); bb.textContent = k; el.append(bb, ' ' + v); return el; }));
