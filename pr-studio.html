@@ -224,11 +224,12 @@ input[type=text].num{font-family:var(--mono)}
 .lr-tile{border-radius:12px;border:1px solid var(--line);padding:16px;display:grid;gap:14px;justify-items:center;min-width:0}
 .lr-tile header{justify-self:stretch;display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font:600 13px/1.2 var(--ui);min-height:36px;align-content:flex-start}
 .lr-tile header small{flex-basis:100%;font:500 11.5px/1 var(--ui);opacity:.7}
-.lr-real{display:grid;justify-items:center;gap:8px;padding:6px 0;font:500 11.5px/1 var(--ui);opacity:.75}
-.lr-real canvas{width:124px;height:82px;display:block;outline:1px dashed currentColor;outline-offset:0}
+.lr-real{display:grid;justify-items:center;gap:8px;padding:6px 0;font:500 11.5px/1 var(--ui)}
+.lr-real span{opacity:.6}
+.lr-real canvas{width:124px;height:82px;display:block;outline:1px solid rgba(127,127,127,.18);outline-offset:0}
 .lr-tile .lr-colour{display:flex;align-items:center;gap:6px;font:500 11.5px/1 var(--ui);opacity:.8}
 .lr-tile .lr-colour input[type=color]{width:26px;height:22px;padding:0;border:1px solid rgba(127,127,127,.4);border-radius:5px;background:none;cursor:pointer}
-.lr-tile .lr-gen{font:600 10.5px/1 var(--ui);letter-spacing:.06em;text-transform:uppercase;padding:4px 6px;border-radius:5px;background:var(--accent);color:#fff}
+.lr-tile .lr-gen{display:inline-flex;align-items:center;font:600 9px/1 var(--ui);letter-spacing:.06em;text-transform:uppercase;padding:3px 5px 3px calc(5px + .06em);border-radius:4px;background:var(--accent);color:#fff;text-box:trim-both cap alphabetic}
 .lr-tile .lr-gen[hidden]{display:none}
 .lr-modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .lr-modes label{position:relative;display:grid;gap:4px;align-content:start;padding:10px 12px;border:1px solid var(--line-2);border-radius:10px;background:var(--field);cursor:pointer;min-width:0}
@@ -1313,7 +1314,7 @@ textarea:focus-visible,input:focus-visible,select:focus-visible{outline:none}
       <div class="qa" id="lr-qa" aria-live="polite"></div>
       <ul class="msgs" id="lr-msgs" aria-live="polite"></ul>
       <div class="export">
-        <button class="btn" id="lr-btn-dl-light" type="button" disabled>Download light-mode PNG</button>
+        <button class="btn secondary" id="lr-btn-dl-light" type="button" disabled>Download light-mode PNG</button>
         <button class="btn secondary" id="lr-btn-dl-dark" type="button" disabled>Download dark-mode PNG</button>
         <span class="status" id="lr-status"></span>
       </div>
