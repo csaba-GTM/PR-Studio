@@ -144,7 +144,29 @@ input[type=text].num{font-family:var(--mono)}
 .nl-clear{font:600 12px var(--ui);color:var(--muted);background:none;border:0;padding:2px 0;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
 .nl-clear:hover{color:var(--fg)}
 .nl-clear[hidden]{display:none}
-.nl-syms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.nl-syms{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.nl-ctl{display:grid;gap:6px}
+.nl-ctl[hidden]{display:none}
+.nl-srow{display:flex;align-items:center;gap:10px}
+.nl-srow label{font-size:12.5px!important;font-weight:500;color:var(--muted)!important;width:46px;flex:none}
+.nl-srow input[type=range]{flex:1;min-width:0;accent-color:var(--accent)}
+.nl-srow output{font:500 12px/1 var(--ui);color:var(--muted);min-width:40px;text-align:right}
+.nl-sacts{display:flex;align-items:center;gap:6px}
+.nl-mini{font:500 12px/1 var(--ui);color:var(--muted);background:none;border:1px solid var(--line);border-radius:7px;padding:6px 9px;cursor:pointer}
+.nl-mini:hover{color:var(--fg);border-color:var(--accent)}
+.nl-mini[aria-pressed="true"]{color:var(--fg);border-color:var(--accent);background:var(--accent-soft,rgba(255,122,58,.14))}
+.nl-pos{margin-left:auto;font-size:12px;color:var(--muted)}
+.nl-syms .field.sel .drop{border-color:var(--accent);border-style:solid}
+/* symbol editing overlay on the preview (not part of the export) */
+.nl-ov{position:absolute;left:0;top:0;width:898px;height:620px;pointer-events:none;z-index:5}
+.nl-ov[hidden]{display:none}
+.nl-ov .box{position:absolute;outline:3px solid var(--accent);outline-offset:3px;transform-origin:50% 50%}
+.nl-ov .h{position:absolute;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;pointer-events:auto;box-shadow:0 2px 8px rgba(0,0,0,.45)}
+.nl-ov .h.size{background:#fff;border:4px solid var(--accent);cursor:nwse-resize}
+.nl-ov .h.rot{background:var(--accent);border:4px solid #fff;cursor:grab}
+.nl-ov .stem{position:absolute;width:0;border-left:2px solid var(--accent);transform-origin:0 0}
+.nl-edit{cursor:default;touch-action:none}
+.nl-edit.over-sym{cursor:grab}
 .nl-syms .drop{grid-template-columns:44px minmax(0,1fr);padding:8px 40px 8px 8px;gap:8px}
 .nl-syms .drop .thumb{width:44px;height:44px}
 .nl-syms .drop::after{right:10px;width:18px;height:18px;margin-top:-9px}
@@ -594,9 +616,7 @@ textarea:focus-visible,input:focus-visible,select:focus-visible{outline:none}
 .nlb .pv{font-size:84px;line-height:84px;background-image:linear-gradient(180deg,#faf149 11px,#f8962a 70.7px)}
 .nlb .pc{font-size:48px;line-height:48px;background-image:linear-gradient(180deg,#faf149 6.3px,#f8962a 40.4px)}
 /* Symbols behind a single game */
-.nlb .sym{position:absolute;top:310px;width:231.3px;height:269.1px;object-fit:contain}
-.nlb .sym.l{left:209.2px;object-position:left bottom}
-.nlb .sym.r{left:440.5px;object-position:right bottom}
+.nlb .sym{position:absolute;transform-origin:50% 50%}
 /* Game cards (212 × 266) */
 .nlb .cards{top:310px;gap:28px}
 .nlb .gc{position:relative;flex:none;width:212px;height:266px;border-radius:18.17px;background:var(--card);box-shadow:0 0 7.57px var(--glow);overflow:hidden}
@@ -616,7 +636,8 @@ textarea:focus-visible,input:focus-visible,select:focus-visible{outline:none}
   background-color:#15161a;background-image:linear-gradient(45deg,#1c1d22 25%,transparent 25%),linear-gradient(-45deg,#1c1d22 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#1c1d22 75%),linear-gradient(-45deg,transparent 75%,#1c1d22 75%);
   background-size:40px 40px;background-position:0 0,0 20px,20px -20px,-20px 0}
 .ppb.light-bg{background-color:#e9ecf1;background-image:linear-gradient(45deg,#dfe3ea 25%,transparent 25%),linear-gradient(-45deg,#dfe3ea 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#dfe3ea 75%),linear-gradient(-45deg,transparent 75%,#dfe3ea 75%)}
-.ppb .ly{position:absolute;left:0;top:0;cursor:grab;transform-origin:0 0}
+.ppb .ly{position:absolute;left:0;top:0;cursor:grab;transform-origin:50% 50%}
+.ppb .ly.fixed{cursor:default;pointer-events:none}
 .ppb .ly.drag{cursor:grabbing}
 .ppb .ly img{display:block;width:100%;height:100%;pointer-events:none}
 .ppb .ly.flip img{transform:scaleX(-1)}
@@ -625,6 +646,10 @@ textarea:focus-visible,input:focus-visible,select:focus-visible{outline:none}
 .ppb .ly.sel{outline:3px solid var(--accent,#ff7a3a);outline-offset:4px}
 .ppb .hdl{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:#fff;border:4px solid var(--accent,#ff7a3a);box-shadow:0 2px 8px rgba(0,0,0,.4);cursor:nwse-resize;z-index:50;display:none}
 .ppb .hdl.on{display:block}
+.ppb .rot{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:var(--accent,#ff7a3a);border:4px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.4);cursor:grab;z-index:50;display:none}
+.ppb .rot.on{display:block}
+.ppb .stem{position:absolute;width:0;border-left:2px solid var(--accent,#ff7a3a);transform-origin:0 0;z-index:49;display:none;pointer-events:none}
+.ppb .stem.on{display:block}
 .ppb .guide{position:absolute;top:0;bottom:0;left:500px;width:0;border-left:2px dashed var(--accent,#ff7a3a);opacity:0;pointer-events:none;z-index:49}
 .ppb .guide.on{opacity:.8}
 .ppb .frame{position:absolute;inset:0;border:2px solid rgba(255,255,255,.12);pointer-events:none;z-index:48}
@@ -1078,13 +1103,23 @@ textarea:focus-visible,input:focus-visible,select:focus-visible{outline:none}
           <div class="field">
             <div class="nl-gamehead"><span class="lbl" id="tn-lbl-symL">Left</span><button type="button" class="nl-clear" id="tn-clr-symL">Remove</button></div>
             <label class="drop" id="tn-drop-symL" tabindex="0" aria-labelledby="tn-lbl-symL"><span class="thumb" id="tn-thumb-symL"></span><span class="meta"><span class="name" id="tn-name-symL">Choose or drop a file</span><span class="sub" id="tn-sub-symL">PNG or SVG</span></span><input type="file" id="tn-in-symL" accept=".png,.svg,.webp,.jpg,.jpeg,image/png,image/svg+xml,image/webp,image/jpeg"></label>
+            <div class="nl-ctl" id="tn-ctl-symL">
+              <div class="nl-srow"><label for="tn-sz-symL">Size</label><input type="range" id="tn-sz-symL" min="25" max="250" step="1" value="100"><output id="tn-szo-symL">100%</output></div>
+              <div class="nl-srow"><label for="tn-rt-symL">Rotate</label><input type="range" id="tn-rt-symL" min="-180" max="180" step="1" value="0"><output id="tn-rto-symL">0°</output></div>
+              <div class="nl-sacts"><button type="button" class="nl-mini" id="tn-fl-symL" aria-pressed="false">Flip ↔</button><button type="button" class="nl-mini" id="tn-rs-symL">Reset</button><span class="nl-pos" id="tn-pos-symL"></span></div>
+            </div>
           </div>
           <div class="field">
             <div class="nl-gamehead"><span class="lbl" id="tn-lbl-symR">Right</span><button type="button" class="nl-clear" id="tn-clr-symR">Remove</button></div>
             <label class="drop" id="tn-drop-symR" tabindex="0" aria-labelledby="tn-lbl-symR"><span class="thumb" id="tn-thumb-symR"></span><span class="meta"><span class="name" id="tn-name-symR">Choose or drop a file</span><span class="sub" id="tn-sub-symR">PNG or SVG</span></span><input type="file" id="tn-in-symR" accept=".png,.svg,.webp,.jpg,.jpeg,image/png,image/svg+xml,image/webp,image/jpeg"></label>
+            <div class="nl-ctl" id="tn-ctl-symR">
+              <div class="nl-srow"><label for="tn-sz-symR">Size</label><input type="range" id="tn-sz-symR" min="25" max="250" step="1" value="100"><output id="tn-szo-symR">100%</output></div>
+              <div class="nl-srow"><label for="tn-rt-symR">Rotate</label><input type="range" id="tn-rt-symR" min="-180" max="180" step="1" value="0"><output id="tn-rto-symR">0°</output></div>
+              <div class="nl-sacts"><button type="button" class="nl-mini" id="tn-fl-symR" aria-pressed="false">Flip ↔</button><button type="button" class="nl-mini" id="tn-rs-symR">Reset</button><span class="nl-pos" id="tn-pos-symR"></span></div>
+            </div>
           </div>
         </div>
-        <p class="hint">Single-game banners only. Each symbol peeks out from behind the card on its side. Leave one empty to show nothing there.</p>
+        <p class="hint">Single-game banners only. Each symbol peeks out from behind the card on its side. On the preview: drag a symbol to move it, the white handle resizes, the orange one rotates (Shift: 15° steps). Arrow keys nudge, [ / ] rotate.</p>
       </section>
     </div>
 
@@ -1093,6 +1128,7 @@ textarea:focus-visible,input:focus-visible,select:focus-visible{outline:none}
         <div class="scaler-box" id="tn-scaler-box">
           <div class="scaler" id="tn-scaler">
             <div class="nlb" id="tn-banner" data-type="special" aria-label="Banner preview"></div>
+            <div class="nl-ov" id="tn-symov" hidden><div class="box"></div><div class="stem"></div><div class="h size" title="Drag to resize"></div><div class="h rot" title="Drag to rotate (Shift: 15° steps)"></div></div>
           </div>
         </div>
       </div>
@@ -1112,7 +1148,7 @@ textarea:focus-visible,input:focus-visible,select:focus-visible{outline:none}
   <header class="top">
     <h1>Tournament Popup Image</h1>
     <span class="spec">PNG · 1000 × 750 px · transparent</span>
-    <p>Upload the four side elements, then drag them into place on the preview. Drag a corner handle (or use the size slider) to resize. The trophy and the light ring are built in and can be nudged too.</p>
+    <p>Upload the four side elements, then drag them into place on the preview. Use the round handles to resize and rotate, or the sliders on the left. The trophy and the light ring are fixed.</p>
   </header>
 
   <div class="grid">
@@ -1120,16 +1156,16 @@ textarea:focus-visible,input:focus-visible,select:focus-visible{outline:none}
       <section class="card" aria-labelledby="pp-h-elements">
         <h3 id="pp-h-elements">Elements</h3>
         <div class="pp-layers" id="pp-layers"></div>
-        <p class="hint">Layer order, top to bottom: 1 trophy · 2 &amp; 3 front · 4 &amp; 5 back · 6 light ring. PNG, WebP or SVG with a transparent background; empty edges are trimmed.</p>
+        <p class="hint">Layer order, top to bottom: trophy · 1 &amp; 2 front · 3 &amp; 4 back · light ring. PNG, WebP or SVG with a transparent background; empty edges are trimmed.</p>
       </section>
 
       <section class="card" aria-labelledby="pp-h-edit">
         <h3 id="pp-h-edit">Editing</h3>
         <ul class="pp-help">
           <li>Click an element on the preview to select it, drag to move.</li>
-          <li>Drag the round handle to resize.</li>
-          <li>Arrow keys nudge 1 px (Shift: 10 px); + / − resize.</li>
-          <li>The trophy and ring snap to the centre line.</li>
+          <li>White handle (corner): resize. Orange handle (top): rotate – hold Shift to step by 15°.</li>
+          <li>Arrow keys nudge 1 px (Shift: 10 px); + / − resize; [ / ] rotate 1°.</li>
+          <li>Hold Alt while dragging to turn off snapping to the centre line.</li>
         </ul>
         <div class="pp-tools">
           <button type="button" class="pp-mini" id="pp-btn-reset-all">Reset all positions</button>
@@ -2189,10 +2225,116 @@ for(let i = 1; i <= 3; i++){
   wireDrop($('drop-icon' + i), $('in-icon' + i), files => guard(async () => { g.icon = await makeLogo(files[0], { w: 172, h: 172 }); state.example.games[i - 1] = false; }));
   wireDrop($('drop-prov' + i), $('in-pfile' + i), files => guard(async () => { g.custom = await makeLogo(files[0], { w: 163, h: 52 }); }));
 }
-wireDrop($('drop-symL'), $('in-symL'), files => guard(async () => { state.symL = await makeLogo(files[0], { w: 232, h: 270 }); state.example.sym = false; }));
-wireDrop($('drop-symR'), $('in-symR'), files => guard(async () => { state.symR = await makeLogo(files[0], { w: 232, h: 270 }); state.example.sym = false; }));
-$('clr-symL').addEventListener('click', () => { state.symL = null; state.example.sym = false; render(); });
-$('clr-symR').addEventListener('click', () => { state.symR = null; state.example.sym = false; render(); });
+/* ---------- symbols behind a single game: position, size, rotation, flip ---------- */
+// default boxes from Figma; the symbol fits its box, aligned to the outer bottom corner
+const SYM_BOX = { symL: { x: 209.2, y: 310, w: 231.3, h: 269.1, side: 'l' }, symR: { x: 440.5, y: 310, w: 231.3, h: 269.1, side: 'r' } };
+const SYM_KEYS = ['symL', 'symR'], RAD = Math.PI / 180;
+let symSel = null;
+async function withNat(o){ const i = await loadImg(o.src); o.nat = { w: i.naturalWidth, h: i.naturalHeight }; return o; }
+const symH = s => s.w * s.nat.h / s.nat.w;
+function symBaseW(k){ const s = state[k], b = SYM_BOX[k]; return s.nat.w * Math.min(b.w / s.nat.w, b.h / s.nat.h); }
+function symDefault(k){
+  const s = state[k], b = SYM_BOX[k]; if(!s || !s.nat) return;
+  s.w = symBaseW(k); const h = symH(s);
+  s.cx = b.side === 'l' ? b.x + s.w / 2 : b.x + b.w - s.w / 2; s.cy = b.y + b.h - h / 2; s.rot = 0; s.flip = false;
+}
+function symStyle(s){
+  const h = symH(s), t = [s.rot ? `rotate(${s.rot}deg)` : '', s.flip ? 'scaleX(-1)' : ''].filter(Boolean).join(' ');
+  return `left:${(s.cx - s.w / 2).toFixed(2)}px;top:${(s.cy - h / 2).toFixed(2)}px;width:${s.w.toFixed(2)}px;height:${h.toFixed(2)}px` + (t ? `;transform:${t}` : '');
+}
+async function setSym(k, file){ state[k] = await withNat(await makeLogo(file, { w: 232, h: 270 })); symDefault(k); state.example.sym = false; symSel = k; }
+wireDrop($('drop-symL'), $('in-symL'), files => guard(() => setSym('symL', files[0])));
+wireDrop($('drop-symR'), $('in-symR'), files => guard(() => setSym('symR', files[0])));
+$('clr-symL').addEventListener('click', () => { state.symL = null; state.example.sym = false; if(symSel === 'symL') symSel = null; render(); });
+$('clr-symR').addEventListener('click', () => { state.symR = null; state.example.sym = false; if(symSel === 'symR') symSel = null; render(); });
+for(const k of SYM_KEYS){
+  $('sz-' + k).addEventListener('input', e => { const s = state[k]; if(!s) return; s.w = symBaseW(k) * (+e.target.value) / 100; symSel = k; symLive(); });
+  $('rt-' + k).addEventListener('input', e => { const s = state[k]; if(!s) return; s.rot = +e.target.value; symSel = k; symLive(); });
+  $('rt-' + k).addEventListener('dblclick', () => { const s = state[k]; if(!s) return; s.rot = 0; symLive(); render(); });
+  ['sz-', 'rt-'].forEach(p => $(p + k).addEventListener('change', () => render()));
+  $('fl-' + k).addEventListener('click', () => { const s = state[k]; if(!s) return; s.flip = !s.flip; symSel = k; render(); });
+  $('rs-' + k).addEventListener('click', () => { if(!state[k]) return; symDefault(k); symSel = k; render(); });
+}
+// panel values + overlay, without repainting the banner
+function symPanel(){
+  for(const k of SYM_KEYS){
+    const s = state[k]; $('ctl-' + k).hidden = !s; $('drop-' + k).closest('.field').classList.toggle('sel', symSel === k && !!s);
+    if(!s) continue;
+    const pct = Math.round(s.w / symBaseW(k) * 100), b = SYM_BOX[k], h = symH(s);
+    $('sz-' + k).value = pct; $('szo-' + k).textContent = pct + '%';
+    $('rt-' + k).value = Math.round(s.rot); $('rto-' + k).textContent = Math.round(s.rot) + '°';
+    $('fl-' + k).setAttribute('aria-pressed', String(!!s.flip));
+    const d0 = { w: symBaseW(k) }; d0.h = d0.w * s.nat.h / s.nat.w;
+    const dx = Math.round(s.cx - (b.side === 'l' ? b.x + d0.w / 2 : b.x + b.w - d0.w / 2)), dy = Math.round(s.cy - (b.y + b.h - d0.h / 2));
+    $('pos-' + k).textContent = `${dx >= 0 ? '+' : ''}${dx}, ${dy >= 0 ? '+' : ''}${dy}`;
+  }
+}
+function toWorld(s, dx, dy){ const a = (s.rot || 0) * RAD; return { x: s.cx + dx * Math.cos(a) - dy * Math.sin(a), y: s.cy + dx * Math.sin(a) + dy * Math.cos(a) }; }
+function toLocal(s, x, y){ const a = -(s.rot || 0) * RAD, dx = x - s.cx, dy = y - s.cy; return { x: dx * Math.cos(a) - dy * Math.sin(a), y: dx * Math.sin(a) + dy * Math.cos(a) }; }
+function symOverlay(){
+  const ov = $('symov'), s = symSel && state[symSel], on = !!s && count() === 1;
+  ov.hidden = !on; if(!on) return;
+  const h = symH(s), box = ov.querySelector('.box');
+  Object.assign(box.style, { left: (s.cx - s.w / 2) + 'px', top: (s.cy - h / 2) + 'px', width: s.w + 'px', height: h + 'px', transform: s.rot ? `rotate(${s.rot}deg)` : '' });
+  const c = toWorld(s, s.w / 2, h / 2), t = toWorld(s, 0, -h / 2 - 44), e = toWorld(s, 0, -h / 2);
+  Object.assign(ov.querySelector('.size').style, { left: c.x + 'px', top: c.y + 'px' });
+  Object.assign(ov.querySelector('.rot').style, { left: t.x + 'px', top: t.y + 'px' });
+  Object.assign(ov.querySelector('.stem').style, { left: e.x + 'px', top: e.y + 'px', height: '44px', transform: `rotate(${(s.rot || 0) + 180}deg)` });
+}
+// live update while dragging: restyle the symbol in both banners, no full repaint
+function symLive(){
+  for(const id of ['banner', 'banner-lc']) for(const k of SYM_KEYS){ const el = $(id).querySelector(`.sym[data-k="${k}"]`); if(el && state[k]) el.setAttribute('style', symStyle(state[k])); }
+  symPanel(); symOverlay();
+}
+const alphaCache = new Map();
+function alphaAt(s, x, y){
+  let c = alphaCache.get(s.src);
+  if(!c){ const img = $('banner').querySelector(`.sym[data-k]`) && [...$('banner').querySelectorAll('.sym')].find(i => i.getAttribute('src') === s.src); if(!img || !img.naturalWidth) return 255;
+    const cv = document.createElement('canvas'), k = Math.min(1, 400 / Math.max(img.naturalWidth, img.naturalHeight)); cv.width = Math.max(1, Math.round(img.naturalWidth * k)); cv.height = Math.max(1, Math.round(img.naturalHeight * k));
+    const ctx = cv.getContext('2d', { willReadFrequently: true }); ctx.drawImage(img, 0, 0, cv.width, cv.height); c = { w: cv.width, h: cv.height, d: ctx.getImageData(0, 0, cv.width, cv.height).data }; alphaCache.set(s.src, c); }
+  const q = toLocal(s, x, y); let u = q.x / s.w + .5; const v = q.y / symH(s) + .5; if(s.flip) u = 1 - u;
+  const px = Math.min(c.w - 1, Math.max(0, Math.floor(u * c.w))), py = Math.min(c.h - 1, Math.max(0, Math.floor(v * c.h)));
+  return c.d[(py * c.w + px) * 4 + 3];
+}
+function symHit(x, y){
+  if(count() !== 1) return null;
+  if(x >= 343 && x <= 557 && y >= 308 && y <= 578) return null;      // the game card sits on top
+  for(const k of ['symR', 'symL']){ const s = state[k]; if(!s) continue; const p = toLocal(s, x, y);
+    if(Math.abs(p.x) <= s.w / 2 && Math.abs(p.y) <= symH(s) / 2 && alphaAt(s, x, y) > 12) return k; }
+  return null;
+}
+{
+  const ed = $('scaler'); ed.classList.add('nl-edit'); ed.tabIndex = 0;
+  const pt = e => { const r = $('banner').getBoundingClientRect(), k = r.width / W; return { x: (e.clientX - r.left) / k, y: (e.clientY - r.top) / k }; };
+  let drag = null;
+  ed.addEventListener('pointerdown', e => {
+    const { x, y } = pt(e), ov = $('symov');
+    if(symSel && state[symSel] && e.target === ov.querySelector('.size')){ const s = state[symSel]; drag = { mode: 'size', d0: Math.hypot(x - s.cx, y - s.cy), w0: s.w }; }
+    else if(symSel && state[symSel] && e.target === ov.querySelector('.rot')){ const s = state[symSel]; drag = { mode: 'rot', a0: Math.atan2(y - s.cy, x - s.cx) / RAD, r0: s.rot || 0 }; }
+    else { const k = symHit(x, y); if(!k){ if(symSel){ symSel = null; symPanel(); symOverlay(); } return; }
+      symSel = k; const s = state[k]; drag = { mode: 'move', x0: x, y0: y, cx0: s.cx, cy0: s.cy }; symPanel(); symOverlay(); }
+    ed.setPointerCapture(e.pointerId); ed.focus({ preventScroll: true }); e.preventDefault();
+  });
+  ed.addEventListener('pointermove', e => {
+    const { x, y } = pt(e);
+    if(!drag){ ed.classList.toggle('over-sym', !!symHit(x, y)); return; }
+    const s = state[symSel]; if(!s) return;
+    if(drag.mode === 'move'){ s.cx = drag.cx0 + x - drag.x0; s.cy = drag.cy0 + y - drag.y0; }
+    else if(drag.mode === 'size') s.w = Math.max(30, drag.w0 * Math.hypot(x - s.cx, y - s.cy) / Math.max(1, drag.d0));
+    else { let r = drag.r0 + Math.atan2(y - s.cy, x - s.cx) / RAD - drag.a0; r = ((r + 540) % 360) - 180; s.rot = e.shiftKey ? Math.round(r / 15) * 15 : (Math.abs(r) < 2 ? 0 : r); }
+    symLive();
+  });
+  const end = () => { if(!drag) return; drag = null; render(); };
+  ed.addEventListener('pointerup', end); ed.addEventListener('pointercancel', end);
+  ed.addEventListener('keydown', e => {
+    const s = symSel && state[symSel]; if(!s || count() !== 1) return; const st = e.shiftKey ? 10 : 1;
+    const mv = { ArrowLeft: [-st, 0], ArrowRight: [st, 0], ArrowUp: [0, -st], ArrowDown: [0, st] }[e.key];
+    if(mv){ e.preventDefault(); s.cx += mv[0]; s.cy += mv[1]; render(); }
+    else if(e.key === '[' || e.key === ']'){ e.preventDefault(); s.rot = (((s.rot || 0) + (e.key === ']' ? 1 : -1) * (e.shiftKey ? 15 : 1)) + 540) % 360 - 180; render(); }
+    else if(e.key === '+' || e.key === '=' || e.key === '-' || e.key === '_'){ e.preventDefault(); s.w = Math.max(30, s.w * ((e.key === '+' || e.key === '=') ? 1.02 : 1 / 1.02)); render(); }
+    else if(e.key === 'Escape'){ symSel = null; symPanel(); symOverlay(); }
+  });
+}
 
 /* ---------- selects ---------- */
 for(let i = 1; i <= 3; i++){
@@ -2242,8 +2384,7 @@ function paint(el, type){
     `<img class="bg" alt="" src="${BG[type]}">` +
     `<div class="row badgerow"><div class="badge">${icon}<span class="blabel">${LABEL[type]}</span></div></div>` +
     head + prizeHTML(titled) +
-    (single && state.symL ? `<img class="sym l" alt="" src="${state.symL.src}">` : '') +
-    (single && state.symR ? `<img class="sym r" alt="" src="${state.symR.src}">` : '') +
+    SYM_KEYS.map(k => single && state[k] && state[k].nat ? `<img class="sym" data-k="${k}" alt="" src="${state[k].src}" style="${symStyle(state[k])}">` : '').join('') +
     `<div class="row cards">${cards}</div>` +
     `<i class="flare" style="left:${left - 3}px"></i><i class="flare" style="left:${right + 3}px"></i>`;
 }
@@ -2269,6 +2410,7 @@ function render(){
   $('clr-symL').hidden = !state.symL; $('clr-symR').hidden = !state.symR;
   paint($('banner'), type);
   paint($('banner-lc'), 'last');
+  symPanel(); symOverlay();
   document.fonts.ready.then(() => requestAnimationFrame(() => check(type)));
 }
 
@@ -2380,7 +2522,8 @@ $('in-value').value = '2500'; $('in-coins').value = '150'; $('in-game').value = 
       $('in-prov' + (i + 1)).value = s.prov;
     }
     $('in-prov1').value = 'onlyplay';      // the single-game example uses Onlyplay; 2 and 3 games switch it below
-    state.symL = { ...SAMPLE.symL, sub: 'example' }; state.symR = { ...SAMPLE.symR, sub: 'example' };
+    state.symL = await withNat({ ...SAMPLE.symL, sub: 'example' }); state.symR = await withNat({ ...SAMPLE.symR, sub: 'example' });
+    symDefault('symL'); symDefault('symR');
   } catch(e){}
   render();
 })();
@@ -2403,17 +2546,17 @@ const RING = 'data:image/webp;base64,UklGRpRnBQBXRUJQVlA4WAoAAAAQAAAAQwUAGgQAQUx
    Side elements fit a box (bw × bh) by default. Drawing order bottom → top: 6, 4, 5, 2, 3, 1. */
 const DEF = {
   6: { name: 'Light ring', cx: 500, cy: 372, w: 900, builtin: RING },
-  4: { name: 'Back left', cx: 255, cy: 330, bw: 250, bh: 250 },
-  5: { name: 'Back right', cx: 745, cy: 330, bw: 250, bh: 250 },
-  2: { name: 'Front left', cx: 300, cy: 525, bw: 270, bh: 270 },
-  3: { name: 'Front right', cx: 700, cy: 525, bw: 270, bh: 270 },
+  4: { n: 3, name: 'Back left', cx: 255, cy: 330, bw: 250, bh: 250 },
+  5: { n: 4, name: 'Back right', cx: 745, cy: 330, bw: 250, bh: 250 },
+  2: { n: 1, name: 'Front left', cx: 300, cy: 525, bw: 270, bh: 270 },
+  3: { n: 2, name: 'Front right', cx: 700, cy: 525, bw: 270, bh: 270 },
   1: { name: 'Trophy', cx: 500, cy: 380, w: 460, builtin: TROPHY },
 };
 const ORDER = [6, 4, 5, 2, 3, 1];          // paint order
-const LIST = [1, 2, 3, 4, 5, 6];           // panel order
-const SNAP = new Set([1, 6]);
+const LIST = [2, 3, 4, 5];                 // editable side elements, shown as 1–4 in the panel
+const SNAP_X = 500;                        // centre line
 
-const L = {};       // layer state: { src, img, nat:{w,h}, cx, cy, w, flip, label, sub, el }
+const L = {};       // layer state: { src, img, nat:{w,h}, cx, cy, w, rot, flip, label, sub, el }
 let sel = null;
 
 /* ---------- files ---------- */
@@ -2458,29 +2601,32 @@ async function makeArt(file){
 const hOf = l => l.nat ? l.w * l.nat.h / l.nat.w : (DEF[l.id].bh || 200);
 function defaultFit(id, l){
   const d = DEF[id];
-  l.cx = d.cx; l.cy = d.cy; l.flip = false;
+  l.cx = d.cx; l.cy = d.cy; l.flip = false; l.rot = 0;
   if(d.w) l.w = d.w;
   else if(l.nat){ const s = Math.min(d.bw / l.nat.w, d.bh / l.nat.h); l.w = l.nat.w * s; }
   else l.w = d.bw;
 }
-for(const id of LIST){ L[id] = { id, src: null, img: null, nat: null }; defaultFit(id, L[id]); }
+for(const id of ORDER){ L[id] = { id, src: null, img: null, nat: null }; defaultFit(id, L[id]); }
 
 /* ---------- panel ---------- */
 function layerCard(id){
-  const d = DEF[id], up = !d.builtin;
+  const d = DEF[id], up = true;
   const el = document.createElement('div'); el.className = 'pp-layer'; el.dataset.id = id;
   el.innerHTML =
-    `<div class="pp-lhead" data-act="select"><span class="pp-num">${id}</span><b>${d.name}</b><small data-role="pos"></small></div>` +
-    (up ? `<label class="drop" tabindex="0" aria-label="Upload element ${id} (${d.name})"><span class="thumb" data-role="thumb"></span>` +
+    `<div class="pp-lhead" data-act="select"><span class="pp-num">${d.n}</span><b>${d.name}</b><small data-role="pos"></small></div>` +
+    (up ? `<label class="drop" tabindex="0" aria-label="Upload element ${d.n} (${d.name})"><span class="thumb" data-role="thumb"></span>` +
           `<span class="meta"><span class="name" data-role="name">Choose or drop a file</span><span class="sub" data-role="sub">PNG, WebP or SVG</span></span>` +
           `<input type="file" accept=".png,.webp,.svg,.jpg,.jpeg,image/png,image/webp,image/svg+xml,image/jpeg"></label>` : '') +
     `<div class="pp-row"><span class="hint">Size</span><input type="range" min="25" max="250" step="1" data-role="size" aria-label="Size of ${d.name}"><output data-role="pct">100%</output></div>` +
+    `<div class="pp-row"><span class="hint">Rotate</span><input type="range" min="-180" max="180" step="1" data-role="rot" aria-label="Rotation of ${d.name}"><output data-role="deg">0°</output></div>` +
     `<div class="pp-acts"><button type="button" class="pp-mini" data-act="flip" aria-pressed="false">Flip ↔</button>` +
     `<button type="button" class="pp-mini" data-act="reset">Reset</button>` +
     (up ? `<button type="button" class="pp-mini" data-act="clear">Remove</button>` : '') + `</div>`;
   el.querySelector('[data-act=select]').addEventListener('click', () => select(id));
   el.addEventListener('focusin', () => select(id, true));
   el.querySelector('[data-role=size]').addEventListener('input', e => { const l = L[id]; l.w = baseW(id) * (+e.target.value) / 100; draw(); });
+  el.querySelector('[data-role=rot]').addEventListener('input', e => { L[id].rot = +e.target.value; draw(); });
+  el.querySelector('[data-role=rot]').addEventListener('dblclick', () => { L[id].rot = 0; draw(); });
   el.querySelector('[data-act=flip]').addEventListener('click', () => { L[id].flip = !L[id].flip; draw(); });
   el.querySelector('[data-act=reset]').addEventListener('click', () => { defaultFit(id, L[id]); select(id); draw(); });
   if(up){
@@ -2504,27 +2650,35 @@ const B = $('banner');
 const guide = document.createElement('div'); guide.className = 'guide';
 const frame = document.createElement('div'); frame.className = 'frame';
 const hdl = document.createElement('div'); hdl.className = 'hdl'; hdl.title = 'Drag to resize';
-ORDER.forEach(id => { const el = document.createElement('div'); el.className = 'ly'; el.dataset.id = id; el.innerHTML = '<img alt="">'; L[id].el = el; B.append(el); });
-B.append(guide, frame, hdl);
+const rot = document.createElement('div'); rot.className = 'rot'; rot.title = 'Drag to rotate (Shift: 15° steps)';
+const stem = document.createElement('div'); stem.className = 'stem';
+ORDER.forEach(id => { const el = document.createElement('div'); el.className = 'ly' + (DEF[id].builtin ? ' fixed' : ''); el.dataset.id = id; el.innerHTML = '<img alt="">'; L[id].el = el; B.append(el); });
+B.append(guide, frame, stem, hdl, rot);
 
 function draw(){
   for(const id of ORDER){
     const l = L[id], el = l.el, src = DEF[id].builtin || l.src, h = hOf(l);
     el.style.width = l.w + 'px'; el.style.height = h + 'px';
-    el.style.transform = `translate(${l.cx - l.w / 2}px,${l.cy - h / 2}px)`;
+    el.style.left = (l.cx - l.w / 2) + 'px'; el.style.top = (l.cy - h / 2) + 'px'; el.style.transform = l.rot ? `rotate(${l.rot}deg)` : '';
     el.classList.toggle('empty', !src); el.classList.toggle('flip', !!l.flip); el.classList.toggle('sel', sel === id);
     const img = el.querySelector('img'); if(src){ if(img.getAttribute('src') !== src) img.src = src; img.hidden = false; el.childNodes.forEach(n => { if(n.nodeType === 3) n.remove(); }); }
-    else { img.removeAttribute('src'); img.hidden = true; if(!el.textContent) el.append(String(id)); }
+    else { img.removeAttribute('src'); img.hidden = true; if(!el.textContent) el.append(String(DEF[id].n)); }
   }
-  if(sel){ const l = L[sel]; hdl.classList.add('on'); hdl.style.left = (l.cx + l.w / 2) + 'px'; hdl.style.top = (l.cy + hOf(l) / 2) + 'px'; } else hdl.classList.remove('on');
+  if(sel){
+    const l = L[sel], h = hOf(l), c = toWorld(l, l.w / 2, h / 2), t = toWorld(l, 0, -h / 2 - 46), e = toWorld(l, 0, -h / 2);
+    hdl.style.left = c.x + 'px'; hdl.style.top = c.y + 'px'; rot.style.left = t.x + 'px'; rot.style.top = t.y + 'px';
+    stem.style.left = e.x + 'px'; stem.style.top = e.y + 'px'; stem.style.height = '46px'; stem.style.transform = `rotate(${(l.rot || 0) + 180}deg)`;
+  }
+  [hdl, rot, stem].forEach(x => x.classList.toggle('on', !!sel));
   // panel
   document.querySelectorAll('#' + $('layers').id + ' .pp-layer').forEach(card => {
     const id = +card.dataset.id, l = L[id];
     card.classList.toggle('sel', sel === id);
     const pct = Math.round(l.w / baseW(id) * 100);
     card.querySelector('[data-role=size]').value = pct; card.querySelector('[data-role=pct]').textContent = pct + '%';
+    card.querySelector('[data-role=rot]').value = Math.round(l.rot || 0); card.querySelector('[data-role=deg]').textContent = Math.round(l.rot || 0) + '°';
     card.querySelector('[data-act=flip]').setAttribute('aria-pressed', String(!!l.flip));
-    card.querySelector('[data-role=pos]').textContent = (DEF[id].builtin || l.src) ? `${Math.round(l.cx - DEF[id].cx) >= 0 ? '+' : ''}${Math.round(l.cx - DEF[id].cx)}, ${Math.round(l.cy - DEF[id].cy) >= 0 ? '+' : ''}${Math.round(l.cy - DEF[id].cy)}` : 'empty';
+    card.querySelector('[data-role=pos]').textContent = l.src ? `${Math.round(l.cx - DEF[id].cx) >= 0 ? '+' : ''}${Math.round(l.cx - DEF[id].cx)}, ${Math.round(l.cy - DEF[id].cy) >= 0 ? '+' : ''}${Math.round(l.cy - DEF[id].cy)}` : 'empty';
     const th = card.querySelector('[data-role=thumb]');
     if(th){ th.style.backgroundImage = l.src ? `url("${l.src}")` : 'none';
       card.querySelector('[data-role=name]').textContent = l.label || 'Choose or drop a file';
@@ -2537,11 +2691,17 @@ function select(id, quiet){ sel = id; draw(); if(!quiet) B.focus({ preventScroll
 
 /* pointer editing: the preview is scaled, so convert screen deltas back to canvas pixels */
 const scaleNow = () => B.getBoundingClientRect().width / W;
+const RAD = Math.PI / 180;
+// local offset (from the element centre, unrotated) -> canvas point, and back
+function toWorld(l, dx, dy){ const a = (l.rot || 0) * RAD; return { x: l.cx + dx * Math.cos(a) - dy * Math.sin(a), y: l.cy + dx * Math.sin(a) + dy * Math.cos(a) }; }
+function toLocal(l, x, y){ const a = -(l.rot || 0) * RAD, dx = x - l.cx, dy = y - l.cy; return { x: dx * Math.cos(a) - dy * Math.sin(a), y: dx * Math.sin(a) + dy * Math.cos(a) }; }
 function hit(x, y){
   for(let i = ORDER.length - 1; i >= 0; i--){
     const id = ORDER[i], l = L[id], h = hOf(l);
-    if(x >= l.cx - l.w / 2 && x <= l.cx + l.w / 2 && y >= l.cy - h / 2 && y <= l.cy + h / 2){
-      const src = DEF[id].builtin || l.src;
+    if(DEF[id].builtin) continue;                       // trophy and ring are fixed
+    const p = toLocal(l, x, y);
+    if(Math.abs(p.x) <= l.w / 2 && Math.abs(p.y) <= h / 2){
+      const src = l.src;
       if(!src) return id;
       // ignore clicks on fully transparent pixels so you can reach the layer underneath
       if(alphaAt(l, x, y) > 12) return id;
@@ -2557,7 +2717,7 @@ function alphaAt(l, x, y){
     cv.width = Math.max(1, Math.round(img.naturalWidth * s)); cv.height = Math.max(1, Math.round(img.naturalHeight * s));
     const ctx = cv.getContext('2d', { willReadFrequently: true }); ctx.drawImage(img, 0, 0, cv.width, cv.height);
     c = { w: cv.width, h: cv.height, d: ctx.getImageData(0, 0, cv.width, cv.height).data }; alphaCache.set(img.src, c); }
-  let u = (x - (l.cx - l.w / 2)) / l.w; const v = (y - (l.cy - hOf(l) / 2)) / hOf(l);
+  const q = toLocal(l, x, y); let u = q.x / l.w + .5; const v = q.y / hOf(l) + .5;
   if(l.flip) u = 1 - u;
   const px = Math.min(c.w - 1, Math.max(0, Math.floor(u * c.w))), py = Math.min(c.h - 1, Math.max(0, Math.floor(v * c.h)));
   return c.d[(py * c.w + px) * 4 + 3];
@@ -2565,7 +2725,8 @@ function alphaAt(l, x, y){
 let drag = null;
 B.addEventListener('pointerdown', e => {
   const r = B.getBoundingClientRect(), k = scaleNow(), x = (e.clientX - r.left) / k, y = (e.clientY - r.top) / k;
-  if(e.target === hdl && sel){ const l = L[sel]; drag = { mode: 'size', id: sel, x0: x, y0: y, w0: l.w, ratio: hOf(l) / l.w }; }
+  if(e.target === hdl && sel){ const l = L[sel]; drag = { mode: 'size', id: sel, d0: Math.hypot(x - l.cx, y - l.cy), w0: l.w }; }
+  else if(e.target === rot && sel){ const l = L[sel]; drag = { mode: 'rot', id: sel, a0: Math.atan2(y - l.cy, x - l.cx) / RAD, r0: l.rot || 0 }; }
   else { const id = hit(x, y); if(!id){ sel = null; draw(); return; } sel = id; const l = L[id]; drag = { mode: 'move', id, x0: x, y0: y, cx0: l.cx, cy0: l.cy }; l.el.classList.add('drag'); draw(); }
   B.setPointerCapture(e.pointerId); B.focus({ preventScroll: true }); e.preventDefault();
 });
@@ -2574,13 +2735,16 @@ B.addEventListener('pointermove', e => {
   const r = B.getBoundingClientRect(), k = scaleNow(), x = (e.clientX - r.left) / k, y = (e.clientY - r.top) / k, l = L[drag.id];
   if(drag.mode === 'move'){
     l.cx = drag.cx0 + (x - drag.x0); l.cy = drag.cy0 + (y - drag.y0);
-    const snap = SNAP.has(drag.id) && Math.abs(l.cx - W / 2) < 8 && !e.altKey;
-    if(snap) l.cx = W / 2; guide.classList.toggle('on', snap);
+    const snap = Math.abs(l.cx - SNAP_X) < 8 && !e.altKey;
+    if(snap) l.cx = SNAP_X; guide.classList.toggle('on', snap);
+  } else if(drag.mode === 'size'){
+    // proportional, around the centre: the handle's distance from the centre sets the size
+    l.w = Math.max(40, drag.w0 * Math.hypot(x - l.cx, y - l.cy) / Math.max(1, drag.d0));
   } else {
-    // keep the top-left corner fixed, resize from the bottom-right handle, proportional
-    const dx = x - drag.x0, dy = (y - drag.y0) / drag.ratio, d = Math.abs(dx) > Math.abs(dy) ? dx : dy;
-    const w = Math.max(40, drag.w0 + d), left = l.cx - l.w / 2, top = l.cy - hOf(l) / 2;
-    l.w = w; l.cx = left + w / 2; l.cy = top + hOf(l) / 2;
+    let r = drag.r0 + Math.atan2(y - l.cy, x - l.cx) / RAD - drag.a0;
+    r = ((r + 540) % 360) - 180;
+    if(e.shiftKey) r = Math.round(r / 15) * 15; else if(Math.abs(r) < 2) r = 0;
+    l.rot = r;
   }
   draw();
 });
@@ -2591,9 +2755,11 @@ B.addEventListener('keydown', e => {
   const mv = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[e.key];
   if(mv){ e.preventDefault(); l.cx += mv[0]; l.cy += mv[1]; draw(); return; }
   if(e.key === '+' || e.key === '=' || e.key === '-' || e.key === '_'){ e.preventDefault(); const f = (e.key === '+' || e.key === '=') ? 1.02 : 1 / 1.02; const cy = l.cy, cx = l.cx; l.w = Math.max(40, l.w * f); l.cx = cx; l.cy = cy; draw(); }
+  if(e.key === '[' || e.key === ']'){ e.preventDefault(); l.rot = (((l.rot || 0) + (e.key === ']' ? 1 : -1) * (e.shiftKey ? 15 : 1)) + 540) % 360 - 180; draw(); }
   if(e.key === 'Escape'){ sel = null; draw(); }
 });
 $('btn-reset-all').addEventListener('click', () => { LIST.forEach(id => defaultFit(id, L[id])); sel = null; draw(); });
+$('btn-reset-all').textContent = 'Reset all elements';
 $('in-lightbg').addEventListener('change', e => B.classList.toggle('light-bg', e.target.checked));
 
 /* ---------- checks ---------- */
@@ -2601,14 +2767,16 @@ let lastCheck = { ok: false };
 function check(){
   const warns = [], chips = [], errors = [];
   const filled = [2, 3, 4, 5].filter(id => L[id].src).length;
-  if(!filled) errors.push('Upload at least one side element (2–5).');
+  if(!filled) errors.push('Upload at least one side element (1–4).');
   else if(filled < 4) warns.push(`${4 - filled} side element${4 - filled > 1 ? 's are' : ' is'} empty and will be left out of the PNG.`);
   for(const id of ORDER){
-    const l = L[id], h = hOf(l); if(!(DEF[id].builtin || l.src)) continue;
-    const out = l.cx - l.w / 2 < -1 || l.cx + l.w / 2 > W + 1 || l.cy - h / 2 < -1 || l.cy + h / 2 > H + 1;
-    if(out && id !== 6) warns.push(`${DEF[id].name} (${id}) runs past the edge of the image and will be cut off.`);
-    if(l.nat && !l.vector){ const up = l.w / l.nat.w; if(up > 1.5) warns.push(`${DEF[id].name} (${id}) is enlarged ${up.toFixed(1)}× and may look soft. Use a larger image.`); }
-    if(l.opaque) warns.push(`${DEF[id].name} (${id}) is a JPG, so it has no transparent background.`);
+    const l = L[id], h = hOf(l); if(DEF[id].builtin || !l.src) continue;
+    const nm = `${DEF[id].name} (${DEF[id].n})`;
+    const pts = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([a, b]) => toWorld(l, a * l.w / 2, b * h / 2));
+    const out = pts.some(p => p.x < -1 || p.x > W + 1 || p.y < -1 || p.y > H + 1);
+    if(out) warns.push(`${nm} runs past the edge of the image and may be cut off.`);
+    if(l.nat && !l.vector){ const up = l.w / l.nat.w; if(up > 1.5) warns.push(`${nm} is enlarged ${up.toFixed(1)}× and may look soft. Use a larger image.`); }
+    if(l.opaque) warns.push(`${nm} is a JPG, so it has no transparent background.`);
   }
   chips.push(['Canvas', '1000 × 750', 'ok'], ['Background', 'transparent', 'ok'], ['Elements', `${filled} / 4`, filled === 4 ? 'ok' : filled ? 'warn' : 'bad']);
   $('qa').replaceChildren(...chips.map(([k, v, c]) => { const el = document.createElement('span'); el.className = 'chip ' + c; const bb = document.createElement('b'); bb.textContent = k; el.append(bb, ' ' + v); return el; }));
@@ -2623,10 +2791,10 @@ async function renderPNG(){
   const ctx = canvas.getContext('2d'); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
   for(const id of ORDER){
     const l = L[id], src = DEF[id].builtin || l.src; if(!src) continue;
-    const img = await loadImg(src), h = hOf(l), x = l.cx - l.w / 2, y = l.cy - h / 2;
+    const img = await loadImg(src), h = hOf(l);
     ctx.save();
-    if(l.flip){ ctx.translate(x + l.w, y); ctx.scale(-1, 1); ctx.drawImage(img, 0, 0, l.w, h); }
-    else ctx.drawImage(img, x, y, l.w, h);
+    ctx.translate(l.cx, l.cy); if(l.rot) ctx.rotate(l.rot * RAD); if(l.flip) ctx.scale(-1, 1);
+    ctx.drawImage(img, -l.w / 2, -h / 2, l.w, h);
     ctx.restore();
   }
   const blob = await new Promise((res, rej) => canvas.toBlob(b => b ? res(b) : rej(new Error('export')), 'image/png'));
