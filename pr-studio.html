@@ -195,6 +195,50 @@ input[type=text].num{font-family:var(--mono)}
 .pp-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .pp-tools label{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer}
 
+/* Logo Resize UI (merged into the shared page stylesheet). */
+.lr-slot{display:grid;gap:12px}
+.lr-src{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--line);aspect-ratio:16/9;display:grid;place-items:center;
+  background-color:#dfe3ea;background-image:linear-gradient(45deg,#c9ced8 25%,transparent 25%),linear-gradient(-45deg,#c9ced8 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#c9ced8 75%),linear-gradient(-45deg,transparent 75%,#c9ced8 75%);background-size:16px 16px;background-position:0 0,0 8px,8px -8px,-8px 0}
+.lr-src[hidden]{display:none}
+.lr-src canvas{max-width:92%;max-height:88%;display:block}
+.lr-src.picking{cursor:crosshair;outline:2px solid var(--accent);outline-offset:2px}
+.lr-src .lr-tag{position:absolute;left:8px;top:8px;font:600 11px/1 var(--ui);background:rgba(0,0,0,.6);color:#fff;padding:5px 7px;border-radius:6px}
+.lr-bg{display:grid;gap:8px}
+.lr-bg[hidden]{display:none}
+.lr-line{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.lr-line label.chk{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:500;cursor:pointer}
+.lr-line input[type=checkbox]{accent-color:var(--accent);width:16px;height:16px}
+.lr-sw{width:22px;height:22px;border-radius:6px;border:1px solid var(--line);flex:none}
+.lr-hex{font:500 12px/1 var(--ui);color:var(--muted)}
+.lr-row{display:flex;align-items:center;gap:10px}
+.lr-row>span{font-size:12.5px;color:var(--muted);width:66px;flex:none}
+.lr-row input[type=range]{flex:1;min-width:0;accent-color:var(--accent)}
+.lr-row output{font:500 12px/1 var(--ui);color:var(--muted);min-width:32px;text-align:right}
+.lr-mini{font:500 12px/1 var(--ui);color:var(--muted);background:none;border:1px solid var(--line);border-radius:7px;padding:6px 9px;cursor:pointer}
+.lr-mini:hover,.lr-mini[aria-pressed="true"]{color:var(--fg);border-color:var(--accent)}
+.lr-mini[aria-pressed="true"]{background:var(--accent-soft,rgba(255,122,58,.14))}
+.lr-mini[hidden]{display:none}
+.lr-swap{display:flex;gap:8px;align-items:center;font-size:12.5px;color:var(--warn)}
+.lr-swap[hidden]{display:none}
+.lr-out{display:grid;grid-template-columns:repeat(2,minmax(0,260px));gap:14px;justify-content:start}
+.lr-tile{border-radius:12px;border:1px solid var(--line);padding:16px;display:grid;gap:14px;justify-items:center;min-width:0}
+.lr-tile header{justify-self:stretch;display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font:600 13px/1.2 var(--ui);min-height:36px;align-content:flex-start}
+.lr-tile header small{flex-basis:100%;font:500 11.5px/1 var(--ui);opacity:.7}
+.lr-real{display:grid;justify-items:center;gap:8px;padding:6px 0;font:500 11.5px/1 var(--ui);opacity:.75}
+.lr-real canvas{width:124px;height:82px;display:block;outline:1px dashed currentColor;outline-offset:0}
+.lr-tile .lr-colour{display:flex;align-items:center;gap:6px;font:500 11.5px/1 var(--ui);opacity:.8}
+.lr-tile .lr-colour input[type=color]{width:26px;height:22px;padding:0;border:1px solid rgba(127,127,127,.4);border-radius:5px;background:none;cursor:pointer}
+.lr-tile .lr-gen{font:600 10.5px/1 var(--ui);letter-spacing:.06em;text-transform:uppercase;padding:4px 6px;border-radius:5px;background:var(--accent);color:#fff}
+.lr-tile .lr-gen[hidden]{display:none}
+.lr-modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.lr-modes label{position:relative;display:grid;gap:4px;align-content:start;padding:10px 12px;border:1px solid var(--line-2);border-radius:10px;background:var(--field);cursor:pointer;min-width:0}
+.lr-modes label:hover:not(:has(input:checked)){border-color:var(--border-hover);background:var(--hover)}
+.lr-modes input{position:absolute;opacity:0;pointer-events:none}
+.lr-modes b{font:600 13px/1.25 var(--ui);color:var(--fg)}
+.lr-modes small{font:400 11.5px/1.35 var(--ui);color:var(--muted)}
+.lr-modes label:has(input:checked){border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:rgba(var(--accent-rgb),.08)}
+.lr-modes label:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+
 /* Searchable provider picker (wraps the native select, which stays the source of truth) */
 .combo{position:relative}
 .combo::after{content:"";position:absolute;right:16px;top:20px;width:7px;height:7px;margin-top:-6px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);pointer-events:none;transition:transform .12s}
@@ -246,6 +290,8 @@ input[type=text].num{font-family:var(--mono)}
 :root[data-site="mate"][data-theme="light"]{--accent:#2f62f0; --accent-rgb:47 98 240}
 :root[data-site="freak"]{--accent:#e0399f; --accent-rgb:224 57 159; --grad:linear-gradient(120deg,#ec4aa6 0%,#c1178a 55%,#9a137c 100%)}
 :root[data-site="freak"][data-theme="light"]{--accent:#c1178a; --accent-rgb:193 23 138}
+:root[data-site="tools"]{--accent:#2ec4a6; --accent-rgb:46 196 166; --grad:linear-gradient(120deg,#5ee7c4 0%,#22b8a0 50%,#0f8f8a 100%)}
+:root[data-site="tools"][data-theme="light"]{--accent:#0d9488; --accent-rgb:13 148 136}
 /* light mode leans on soft shadows instead of grey fills */
 :root[data-theme="light"] .card,:root[data-theme="light"] .stage,:root[data-theme="light"] .export{box-shadow:var(--card-shadow)}
 :root[data-theme="light"] .side{border-right-color:var(--line)}
@@ -326,6 +372,10 @@ body{background:var(--bg);font:14px/1.5 var(--ui);font-feature-settings:"cv11","
 .site-ava[data-site="chipy"]{background:linear-gradient(135deg,#f9a04a,#fe5a2c)}
 .site-ava[data-site="mate"]{background:linear-gradient(135deg,#5cc0ff,#3a62ff)}
 .site-ava[data-site="freak"]{background:linear-gradient(135deg,#ec4aa6,#a8137f)}
+.site-ava[data-site="tools"]{background:linear-gradient(135deg,#5ee7c4,#0f8f8a);font-size:11px}
+.site-list li.sep{margin-top:5px;position:relative}
+.site-list li.sep::before{content:"";position:absolute;left:4px;right:4px;top:-4px;border-top:1px solid var(--line-2)}
+.nav-group[hidden]{display:none}
 .site-list{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:50;margin:0;padding:5px;list-style:none;background:var(--panel-2);border:1px solid var(--line-2);border-radius:11px;box-shadow:var(--pop-shadow);outline:none}
 .site-list li{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:8px;cursor:pointer;font:500 14px/1 var(--ui);color:var(--label)}
 .site-list li .site-ava{width:24px;height:24px;border-radius:6px;font-size:10.5px}
@@ -654,7 +704,7 @@ textarea:focus-visible,input:focus-visible,select:focus-visible{outline:none}
 .ppb .guide.on{opacity:.8}
 .ppb .frame{position:absolute;inset:0;border:2px solid rgba(255,255,255,.12);pointer-events:none;z-index:48}
 </style>
-<script>(function(d){try{d.dataset.theme=localStorage.getItem('pr-studio-theme')==='light'?'light':'dark';var s=localStorage.getItem('pr-studio-site');d.dataset.site=/^(chipy|mate|freak)$/.test(s||'')?s:'chipy'}catch(e){d.dataset.theme='dark';d.dataset.site='chipy'}})(document.documentElement)</script>
+<script>(function(d){try{d.dataset.theme=localStorage.getItem('pr-studio-theme')==='light'?'light':'dark';var s=localStorage.getItem('pr-studio-site');d.dataset.site=/^(chipy|mate|freak|tools)$/.test(s||'')?s:'chipy'}catch(e){d.dataset.theme='dark';d.dataset.site='chipy'}})(document.documentElement)</script>
 <div class="shell" id="shell">
 <aside class="side" id="side" aria-label="Banner types">
   <div class="side-head">
@@ -664,15 +714,15 @@ textarea:focus-visible,input:focus-visible,select:focus-visible{outline:none}
   <div class="site-pick" id="site-pick">
     <button type="button" class="site-btn" id="site-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="site-list" title="Choose the site">
       <span class="site-ava" id="site-ava" data-site="chipy">C</span>
-      <span class="site-txt lbl"><small>Banners for</small><b id="site-name">Chipy</b></span>
+      <span class="site-txt lbl"><small id="site-kicker">Banners for</small><b id="site-name">Chipy</b></span>
       <svg class="ico lbl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg>
     </button>
     <ul class="site-list" id="site-list" role="listbox" aria-label="Site" tabindex="-1" hidden>
-      <li role="option" id="site-chipy" data-site="chipy" aria-selected="true"><span class="site-ava" data-site="chipy">C</span><span>Chipy</span><svg class="ico tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg></li><li role="option" id="site-mate" data-site="mate" aria-selected="false"><span class="site-ava" data-site="mate">M</span><span>Mate</span><svg class="ico tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg></li><li role="option" id="site-freak" data-site="freak" aria-selected="false"><span class="site-ava" data-site="freak">F</span><span>Freak</span><svg class="ico tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg></li>
+      <li role="option" id="site-chipy" data-site="chipy" aria-selected="true"><span class="site-ava" data-site="chipy">C</span><span>Chipy</span><svg class="ico tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg></li><li role="option" id="site-mate" data-site="mate" aria-selected="false"><span class="site-ava" data-site="mate">M</span><span>Mate</span><svg class="ico tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg></li><li role="option" id="site-freak" data-site="freak" aria-selected="false"><span class="site-ava" data-site="freak">F</span><span>Freak</span><svg class="ico tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg></li><li role="option" id="site-tools" data-site="tools" aria-selected="false" class="sep"><span class="site-ava" data-site="tools">GT</span><span>General Tools</span><svg class="ico tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg></li>
     </ul>
   </div>
   <nav class="tabs" role="tablist" aria-orientation="vertical" aria-label="Banner type">
-    <div class="nav-group"><div class="nav-title">Casino</div><button type="button" role="tab" id="tab-nc" aria-controls="nc-root" aria-selected="true" data-hash="new-casino" data-group="Casino" title="New Casino"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.1 5.4 5.4 2.1-5.4 2.1L12 18.5l-2.1-5.4L4.5 11l5.4-2.1z"/><path d="M19 3v4M17 5h4"/></svg><span class="lbl">New Casino</span></button><button type="button" role="tab" id="tab-ep" aria-controls="ep-root" aria-selected="false" data-hash="editors-pick" data-group="Casino" title="Editor's Pick"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="5.5"/><path d="M8.6 13.4 7 21l5-2.6 5 2.6-1.6-7.6"/></svg><span class="lbl">Editor's Pick</span></button></div><div class="nav-group"><div class="nav-title">Tournaments</div><button type="button" role="tab" id="tab-ts" aria-controls="ts-root" aria-selected="false" data-hash="tournament-social" data-group="Tournaments" title="Tournament Social"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 16.5V21M7 3.5h10V9a5 5 0 0 1-10 0z"/><path d="M17 5h2.5a.5.5 0 0 1 .5.5V7a3.5 3.5 0 0 1-3.5 3.5M7 5H4.5a.5.5 0 0 0-.5.5V7a3.5 3.5 0 0 0 3.5 3.5"/></svg><span class="lbl">Tournament Social</span></button><button type="button" role="tab" id="tab-tn" aria-controls="tn-root" aria-selected="false" data-hash="tournament-newsletter" data-group="Tournaments" title="Tournament Newsletter"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 7 8.5 6 8.5-6"/></svg><span class="lbl">Tournament Newsletter</span></button><button type="button" role="tab" id="tab-pp" aria-controls="pp-root" aria-selected="false" data-hash="tournament-popup" data-group="Tournaments" title="Popup Image"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg><span class="lbl">Popup Image</span></button></div>
+    <div class="nav-group" data-site="chipy"><div class="nav-title">Casino</div><button type="button" role="tab" id="tab-nc" aria-controls="nc-root" aria-selected="true" data-hash="new-casino" data-group="Casino" data-site="chipy" title="New Casino"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.1 5.4 5.4 2.1-5.4 2.1L12 18.5l-2.1-5.4L4.5 11l5.4-2.1z"/><path d="M19 3v4M17 5h4"/></svg><span class="lbl">New Casino</span></button><button type="button" role="tab" id="tab-ep" aria-controls="ep-root" aria-selected="false" data-hash="editors-pick" data-group="Casino" data-site="chipy" title="Editor's Pick"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="5.5"/><path d="M8.6 13.4 7 21l5-2.6 5 2.6-1.6-7.6"/></svg><span class="lbl">Editor's Pick</span></button></div><div class="nav-group" data-site="chipy"><div class="nav-title">Tournaments</div><button type="button" role="tab" id="tab-ts" aria-controls="ts-root" aria-selected="false" data-hash="tournament-social" data-group="Tournaments" data-site="chipy" title="Tournament Social"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 16.5V21M7 3.5h10V9a5 5 0 0 1-10 0z"/><path d="M17 5h2.5a.5.5 0 0 1 .5.5V7a3.5 3.5 0 0 1-3.5 3.5M7 5H4.5a.5.5 0 0 0-.5.5V7a3.5 3.5 0 0 0 3.5 3.5"/></svg><span class="lbl">Tournament Social</span></button><button type="button" role="tab" id="tab-tn" aria-controls="tn-root" aria-selected="false" data-hash="tournament-newsletter" data-group="Tournaments" data-site="chipy" title="Tournament Newsletter"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 7 8.5 6 8.5-6"/></svg><span class="lbl">Tournament Newsletter</span></button><button type="button" role="tab" id="tab-pp" aria-controls="pp-root" aria-selected="false" data-hash="tournament-popup" data-group="Tournaments" data-site="chipy" title="Popup Image"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg><span class="lbl">Popup Image</span></button></div><div class="nav-group" data-site="tools"><div class="nav-title">Other tools</div><button type="button" role="tab" id="tab-lr" aria-controls="lr-root" aria-selected="false" data-hash="logo-resize" data-group="Other tools" data-site="tools" title="Logo Resize"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span class="lbl">Logo Resize</span></button></div>
   </nav>
   <div class="side-foot">
     <div class="theme-sw" role="radiogroup" aria-label="Theme">
@@ -1187,6 +1237,85 @@ textarea:focus-visible,input:focus-visible,select:focus-visible{outline:none}
       <div class="export">
         <button class="btn" id="pp-btn-dl" type="button" disabled>Download PNG</button>
         <span class="status" id="pp-status"></span>
+      </div>
+    </section>
+  </div>
+</section>
+<section class="app tool" hidden id="lr-root" role="tabpanel" aria-labelledby="tab-lr">
+  <header class="top">
+    <h1>Logo Resize</h1>
+    <span class="spec">PNG · 124 × 82 px · light + dark</span>
+    <p>Drop a logo you found online. The tool removes a plain background, fits the logo edge to edge into 124 × 82 px and builds the missing light- or dark-mode version. Upload both versions if you have them.</p>
+  </header>
+
+  <div class="grid">
+    <div class="rail">
+      <section class="card lr-slot" aria-labelledby="lr-h-light">
+        <h3 id="lr-h-light">Light-mode logo</h3>
+        <p class="hint">For light backgrounds – usually the dark-coloured version. Optional – leave one empty and it is generated from the other.</p>
+        <label class="drop" id="lr-drop-light" tabindex="0" aria-label="Light-mode logo"><span class="thumb" data-role="thumb"></span><span class="meta"><span class="name" data-role="name">Choose or drop a file</span><span class="sub" data-role="sub"></span></span><input type="file" id="lr-in-light" accept=".png,.jpg,.jpeg,.webp,.svg,.gif,.avif,image/*"></label>
+        <div class="lr-swap" id="lr-swapbox-light" hidden>This looks like the other version. <button type="button" class="lr-mini" id="lr-swap-light">Move it</button></div>
+        <div class="lr-src" id="lr-srcv-light" hidden><span class="lr-tag"></span><canvas id="lr-srcc-light"></canvas></div>
+        <div class="lr-bg" id="lr-bgbox-light" hidden>
+          <div class="lr-line"><label class="chk"><input type="checkbox" id="lr-bgon-light"> Remove background</label><span class="lr-sw" id="lr-sw-light"></span><span class="lr-hex" id="lr-hex-light"></span><button type="button" class="lr-mini" id="lr-pick-light" aria-pressed="false">Pick colour</button></div>
+          <div class="lr-row"><span>Tolerance</span><input type="range" id="lr-tol-light" min="1" max="40" step="1" aria-label="Background tolerance"><output id="lr-tolo-light">12</output></div>
+          <div class="lr-line"><label class="chk" title="Also removes enclosed areas of the background colour, like the inside of O, A or a ring"><input type="checkbox" id="lr-inside-light"> Inside shapes too</label><button type="button" class="lr-mini" id="lr-rm-light">Remove file</button></div>
+          <p class="hint">Turn on “Inside shapes too” if the background still shows inside letters like O or A.</p>
+        </div>
+      </section>
+
+      <section class="card lr-slot" aria-labelledby="lr-h-dark">
+        <h3 id="lr-h-dark">Dark-mode logo</h3>
+        <p class="hint">For dark backgrounds – usually the white or light version. Optional – leave one empty and it is generated from the other.</p>
+        <label class="drop" id="lr-drop-dark" tabindex="0" aria-label="Dark-mode logo"><span class="thumb" data-role="thumb"></span><span class="meta"><span class="name" data-role="name">Choose or drop a file</span><span class="sub" data-role="sub"></span></span><input type="file" id="lr-in-dark" accept=".png,.jpg,.jpeg,.webp,.svg,.gif,.avif,image/*"></label>
+        <div class="lr-swap" id="lr-swapbox-dark" hidden>This looks like the other version. <button type="button" class="lr-mini" id="lr-swap-dark">Move it</button></div>
+        <div class="lr-src" id="lr-srcv-dark" hidden><span class="lr-tag"></span><canvas id="lr-srcc-dark"></canvas></div>
+        <div class="lr-bg" id="lr-bgbox-dark" hidden>
+          <div class="lr-line"><label class="chk"><input type="checkbox" id="lr-bgon-dark"> Remove background</label><span class="lr-sw" id="lr-sw-dark"></span><span class="lr-hex" id="lr-hex-dark"></span><button type="button" class="lr-mini" id="lr-pick-dark" aria-pressed="false">Pick colour</button></div>
+          <div class="lr-row"><span>Tolerance</span><input type="range" id="lr-tol-dark" min="1" max="40" step="1" aria-label="Background tolerance"><output id="lr-tolo-dark">12</output></div>
+          <div class="lr-line"><label class="chk" title="Also removes enclosed areas of the background colour, like the inside of O, A or a ring"><input type="checkbox" id="lr-inside-dark"> Inside shapes too</label><button type="button" class="lr-mini" id="lr-rm-dark">Remove file</button></div>
+          <p class="hint">Turn on “Inside shapes too” if the background still shows inside letters like O or A.</p>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="lr-h-gen">
+        <h3 id="lr-h-gen">Generate the missing version</h3>
+        <div class="field">
+          <span class="lbl" id="lr-lbl-mode">Colour conversion</span>
+          <div class="lr-modes" role="radiogroup" aria-labelledby="lr-lbl-mode">
+            <label><input type="radio" name="lr-mode" value="smart" checked><b>Smart</b><small>Swaps greys only</small></label>
+            <label><input type="radio" name="lr-mode" value="lightness"><b>Invert lightness</b><small>Same hue, dark ↔ light</small></label>
+            <label><input type="radio" name="lr-mode" value="negative"><b>Negative</b><small>Flips every colour</small></label>
+            <label><input type="radio" name="lr-mode" value="mono"><b>One colour</b><small>All white or all black</small></label>
+          </div>
+        </div>
+        <div class="field">
+          <label for="lr-in-name">File name</label>
+          <input type="text" id="lr-in-name" spellcheck="false" autocomplete="off" placeholder="logo">
+          <p class="hint">Saved as [name]-light.png and [name]-dark.png.</p>
+        </div>
+      </section>
+    </div>
+
+    <section class="preview" aria-label="Preview and export">
+      <div class="lr-out">
+        <div class="lr-tile" id="lr-tile-light">
+          <header>Light mode <span class="lr-gen" id="lr-gen-light" hidden>generated</span><small>for light backgrounds</small></header>
+          <div class="lr-real"><canvas id="lr-out-light" width="124" height="82"></canvas><span>124 × 82 · actual size</span></div>
+          <label class="lr-colour">Preview background <input type="color" id="lr-bg-light" value="#ffffff"></label>
+        </div>
+        <div class="lr-tile" id="lr-tile-dark">
+          <header>Dark mode <span class="lr-gen" id="lr-gen-dark" hidden>generated</span><small>for dark backgrounds</small></header>
+          <div class="lr-real"><canvas id="lr-out-dark" width="124" height="82"></canvas><span>124 × 82 · actual size</span></div>
+          <label class="lr-colour">Preview background <input type="color" id="lr-bg-dark" value="#121214"></label>
+        </div>
+      </div>
+      <div class="qa" id="lr-qa" aria-live="polite"></div>
+      <ul class="msgs" id="lr-msgs" aria-live="polite"></ul>
+      <div class="export">
+        <button class="btn" id="lr-btn-dl-light" type="button" disabled>Download light-mode PNG</button>
+        <button class="btn secondary" id="lr-btn-dl-dark" type="button" disabled>Download dark-mode PNG</button>
+        <span class="status" id="lr-status"></span>
       </div>
     </section>
   </div>
@@ -2838,6 +2967,255 @@ draw();
 })();
 </script>
 <script>
+(() => {
+'use strict';
+const P = 'lr-';
+const $ = id => document.getElementById(P + id);
+const ROOT = $('root');
+const W = 124, H = 82, MAXSRC = 1600;
+const radio = name => document.querySelector(`input[name="${P}${name}"]:checked`).value;
+const KEYS = ['light', 'dark'];
+const OTHER = { light: 'dark', dark: 'light' };
+const S = { light: null, dark: null };      // slot: { label, src (canvas), bg:{on,tol,inside,color,auto}, clean (canvas), picking }
+const OUT = { light: null, dark: null };    // final 124 × 82 canvases
+
+/* ---------- pixels ---------- */
+const loadImg = src => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => rej(new Error('decode')); i.src = src; });
+const readAs = (file, how) => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r[how](file); });
+const cv = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+const ctx2 = c => c.getContext('2d', { willReadFrequently: true });
+async function svgToCanvas(text){
+  const doc = new DOMParser().parseFromString(text, 'image/svg+xml'), svg = doc.documentElement;
+  if(doc.querySelector('parsererror') || svg.localName !== 'svg') throw new Error('This SVG could not be read. Use a PNG instead.');
+  let vw, vh; const vb = (svg.getAttribute('viewBox') || '').trim().split(/[\s,]+/).map(Number);
+  if(vb.length === 4 && vb[2] > 0 && vb[3] > 0){ vw = vb[2]; vh = vb[3]; }
+  else { vw = parseFloat(svg.getAttribute('width')); vh = parseFloat(svg.getAttribute('height'));
+    if(!(vw > 0 && vh > 0)) throw new Error('This SVG has no size. Use a PNG instead.'); svg.setAttribute('viewBox', `0 0 ${vw} ${vh}`); }
+  const s = Math.min(1000 / vw, 1000 / vh), w = Math.round(vw * s), h = Math.round(vh * s);
+  svg.setAttribute('width', w); svg.setAttribute('height', h);
+  const url = URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(svg)], { type: 'image/svg+xml' }));
+  try { const img = await loadImg(url); const c = cv(w, h); c.getContext('2d').drawImage(img, 0, 0, w, h); return c; }
+  finally { URL.revokeObjectURL(url); }
+}
+async function fileToCanvas(file){
+  const isSvg = file.type === 'image/svg+xml' || /\.svg$/i.test(file.name);
+  if(isSvg) return { canvas: await svgToCanvas(await readAs(file, 'readAsText')), vector: true };
+  if(!/^image\/(png|jpeg|webp|gif|avif)$/.test(file.type)) throw new Error('Use a PNG, JPG, WebP or SVG file.');
+  const img = await loadImg(await readAs(file, 'readAsDataURL'));
+  const s = Math.min(1, MAXSRC / Math.max(img.naturalWidth, img.naturalHeight)), c = cv(Math.round(img.naturalWidth * s), Math.round(img.naturalHeight * s));
+  const g = c.getContext('2d'); g.imageSmoothingQuality = 'high'; g.drawImage(img, 0, 0, c.width, c.height);
+  return { canvas: c, vector: false, natural: { w: img.naturalWidth, h: img.naturalHeight } };
+}
+// background colour = most common colour along the border (if the border is opaque at all)
+function detectBg(c){
+  const { width: w, height: h } = c, d = ctx2(c).getImageData(0, 0, w, h).data, counts = new Map(); let opaque = 0, total = 0;
+  const visit = (x, y) => { const i = (y * w + x) * 4; total++; if(d[i + 3] < 200) return; opaque++;
+    const key = (d[i] >> 3) << 10 | (d[i + 1] >> 3) << 5 | (d[i + 2] >> 3), e = counts.get(key) || [0, 0, 0, 0];
+    e[0]++; e[1] += d[i]; e[2] += d[i + 1]; e[3] += d[i + 2]; counts.set(key, e); };
+  for(let x = 0; x < w; x++){ visit(x, 0); visit(x, h - 1); } for(let y = 1; y < h - 1; y++){ visit(0, y); visit(w - 1, y); }
+  let best = null; for(const e of counts.values()) if(!best || e[0] > best[0]) best = e;
+  const color = best ? [best[1] / best[0], best[2] / best[0], best[3] / best[0]].map(Math.round) : [255, 255, 255];
+  return { color, opaqueBorder: opaque / Math.max(1, total), uniform: best ? best[0] / Math.max(1, opaque) : 0 };
+}
+// colour-key removal: flood fill from the edges (or everywhere), soft edges, colour decontamination
+function removeBg(src, bg){
+  const { width: w, height: h } = src, out = cv(w, h), g = ctx2(out); g.drawImage(src, 0, 0);
+  const im = g.getImageData(0, 0, w, h), d = im.data, n = w * h, [br, bgc, bb] = bg.color;
+  const t1 = Math.max(1, bg.tol * 4.41), t0 = t1 * 0.55;
+  const f = new Float32Array(n);
+  for(let p = 0, i = 0; p < n; p++, i += 4){
+    const dist = Math.hypot(d[i] - br, d[i + 1] - bgc, d[i + 2] - bb);
+    f[p] = d[i + 3] === 0 ? 1 : dist <= t0 ? 1 : dist >= t1 ? 0 : (t1 - dist) / (t1 - t0);
+  }
+  let keep;
+  if(bg.inside) keep = f;
+  else {
+    keep = new Float32Array(n); const q = new Int32Array(n); let head = 0, tail = 0; const seen = new Uint8Array(n);
+    const push = p => { if(!seen[p] && f[p] > 0){ seen[p] = 1; q[tail++] = p; } };
+    for(let x = 0; x < w; x++){ push(x); push((h - 1) * w + x); } for(let y = 0; y < h; y++){ push(y * w); push(y * w + w - 1); }
+    while(head < tail){ const p = q[head++]; keep[p] = f[p]; if(f[p] < .999) continue;   // soft pixels are the edge: stop there
+      const x = p % w; if(x > 0) push(p - 1); if(x < w - 1) push(p + 1); if(p >= w) push(p - w); if(p < n - w) push(p + w); }
+  }
+  for(let p = 0, i = 0; p < n; p++, i += 4){
+    const r = keep[p]; if(!r) continue;
+    if(r >= .999){ d[i + 3] = 0; continue; }
+    const a = 1 - r; // remove the background colour that was mixed into anti-aliased edge pixels
+    d[i] = Math.max(0, Math.min(255, (d[i] - br * r) / a)); d[i + 1] = Math.max(0, Math.min(255, (d[i + 1] - bgc * r) / a)); d[i + 2] = Math.max(0, Math.min(255, (d[i + 2] - bb * r) / a));
+    d[i + 3] = Math.round(d[i + 3] * a);
+  }
+  g.putImageData(im, 0, 0); return out;
+}
+function trim(c){
+  const { width: w, height: h } = c, d = ctx2(c).getImageData(0, 0, w, h).data;
+  let x0 = w, y0 = h, x1 = -1, y1 = -1;
+  for(let y = 0; y < h; y++) for(let x = 0; x < w; x++) if(d[(y * w + x) * 4 + 3] > 8){ if(x < x0) x0 = x; if(x > x1) x1 = x; if(y < y0) y0 = y; if(y > y1) y1 = y; }
+  if(x1 < 0) return null;
+  const o = cv(x1 - x0 + 1, y1 - y0 + 1); o.getContext('2d').drawImage(c, x0, y0, o.width, o.height, 0, 0, o.width, o.height); return o;
+}
+/* colour conversion for the generated version; target = 'light' (logo for light backgrounds) or 'dark' */
+function rgb2hsl(r, g, b){ r /= 255; g /= 255; b /= 255; const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2; let h = 0, s = 0;
+  if(mx !== mn){ const d = mx - mn; s = l > .5 ? d / (2 - mx - mn) : d / (mx + mn); h = mx === r ? (g - b) / d + (g < b ? 6 : 0) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h /= 6; } return [h, s, l]; }
+function hsl2rgb(h, s, l){ if(!s) return [l * 255, l * 255, l * 255]; const q = l < .5 ? l * (1 + s) : l + s - l * s, p = 2 * l - q;
+  const f = t => { t = (t + 1) % 1; return 255 * (t < 1/6 ? p + (q - p) * 6 * t : t < 1/2 ? q : t < 2/3 ? p + (q - p) * (2/3 - t) * 6 : p); }; return [f(h + 1/3), f(h), f(h - 1/3)]; }
+function convert(src, mode, target){
+  const { width: w, height: h } = src, out = cv(w, h), g = ctx2(out); g.drawImage(src, 0, 0);
+  const im = g.getImageData(0, 0, w, h), d = im.data, mono = target === 'dark' ? 255 : 0;
+  for(let i = 0; i < d.length; i += 4){
+    if(!d[i + 3]) continue; const r = d[i], gg = d[i + 1], b = d[i + 2]; let o;
+    if(mode === 'negative') o = [255 - r, 255 - gg, 255 - b];
+    else if(mode === 'mono') o = [mono, mono, mono];
+    else {
+      const [hh, s, l] = rgb2hsl(r, gg, b), inv = hsl2rgb(hh, s, 1 - l);
+      if(mode === 'lightness') o = inv;
+      else { // smart: only near-neutral pixels (black / white / grey) swap; colourful pixels stay
+        const chroma = Math.max(r, gg, b) - Math.min(r, gg, b), t = Math.min(1, Math.max(0, (chroma - 28) / 50)), k = 1 - t * t * (3 - 2 * t);
+        o = [r + (inv[0] - r) * k, gg + (inv[1] - gg) * k, b + (inv[2] - b) * k];
+      }
+    }
+    d[i] = o[0]; d[i + 1] = o[1]; d[i + 2] = o[2];
+  }
+  g.putImageData(im, 0, 0); return out;
+}
+// fit edge to edge, centred, with a stepped high-quality downscale
+function fit(src, w, h){
+  const s = Math.min(w / src.width, h / src.height), tw = Math.max(1, Math.round(src.width * s)), th = Math.max(1, Math.round(src.height * s));
+  let cur = src;
+  while(cur.width / 2 >= tw && cur.height / 2 >= th){ const n = cv(Math.round(cur.width / 2), Math.round(cur.height / 2)), g = n.getContext('2d'); g.imageSmoothingQuality = 'high'; g.drawImage(cur, 0, 0, n.width, n.height); cur = n; }
+  const out = cv(w, h), g = out.getContext('2d'); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
+  g.drawImage(cur, Math.round((w - tw) / 2), Math.round((h - th) / 2), tw, th);
+  return { canvas: out, scale: s, tw, th };
+}
+// average perceived lightness of the visible pixels (0 = black, 1 = white)
+function lightness(c){
+  const d = ctx2(c).getImageData(0, 0, c.width, c.height).data; let sum = 0, wsum = 0;
+  for(let i = 0; i < d.length; i += 4){ const a = d[i + 3] / 255; if(a < .2) continue; sum += a * (0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2]) / 255; wsum += a; }
+  return wsum ? sum / wsum : .5;
+}
+const lum = hex => { const v = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255).map(x => x <= .03928 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4); return .2126 * v[0] + .7152 * v[1] + .0722 * v[2]; };
+const hexOf = c => '#' + c.map(v => Math.round(v).toString(16).padStart(2, '0')).join('');
+
+/* ---------- slots ---------- */
+async function load(k, file){
+  const { canvas, vector, natural } = await fileToCanvas(file), det = detectBg(canvas);
+  const on = det.opaqueBorder > .6;          // an opaque border means there is a background to remove
+  S[k] = { label: file.name, vector, natural, src: canvas, bg: { on, tol: 12, inside: false, color: det.color, uniform: det.uniform }, picking: false, opaque: det.opaqueBorder };
+  if(!$('in-name').value.trim()) $('in-name').value = file.name.replace(/\.[^.]+$/, '').toLowerCase().replace(/[-_ ]*(logo|light|dark|white|black|color|colour)\b/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'logo';
+  clean(k);
+}
+function clean(k){ const s = S[k]; if(!s) return; s.clean = trim(s.bg.on ? removeBg(s.src, s.bg) : s.src); }
+function wireSlot(k){
+  const drop = $('drop-' + k), input = $('in-' + k);
+  const go = async files => { setStatus(''); try{ await load(k, files[0]); } catch(e){ setStatus(e.message || 'That file could not be read.', true); } render(); };
+  input.addEventListener('change', () => { if(input.files.length) go([...input.files]); input.value = ''; });
+  drop.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); input.click(); } });
+  drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over'); });
+  drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+  drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('over'); if(e.dataTransfer.files.length) go([...e.dataTransfer.files]); });
+  $('rm-' + k).addEventListener('click', () => { S[k] = null; render(); });
+  $('bgon-' + k).addEventListener('change', e => { S[k].bg.on = e.target.checked; clean(k); render(); });
+  $('inside-' + k).addEventListener('change', e => { S[k].bg.inside = e.target.checked; clean(k); render(); });
+  let t = null;
+  $('tol-' + k).addEventListener('input', e => { S[k].bg.tol = +e.target.value; $('tolo-' + k).textContent = e.target.value; clearTimeout(t); t = setTimeout(() => { clean(k); render(); }, 60); });
+  $('pick-' + k).addEventListener('click', () => { S[k].picking = !S[k].picking; render(); });
+  $('srcv-' + k).addEventListener('click', e => {
+    const s = S[k]; if(!s || !s.picking) return;
+    const c = $('srcc-' + k), r = c.getBoundingClientRect(); if(e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return;
+    const x = Math.floor((e.clientX - r.left) / r.width * s.src.width), y = Math.floor((e.clientY - r.top) / r.height * s.src.height);
+    const px = ctx2(s.src).getImageData(x, y, 1, 1).data; s.bg.color = [px[0], px[1], px[2]]; s.bg.on = true; s.picking = false; clean(k); render();
+  });
+  $('swap-' + k).addEventListener('click', () => { [S.light, S.dark] = [S.dark, S.light]; render(); });
+}
+KEYS.forEach(wireSlot);
+
+/* ---------- render ---------- */
+function drawContain(target, src){
+  const g = target.getContext('2d'); g.clearRect(0, 0, target.width, target.height); if(!src) return;
+  const s = Math.min(target.width / src.width, target.height / src.height), w = src.width * s, h = src.height * s;
+  g.imageSmoothingQuality = 'high'; g.drawImage(src, (target.width - w) / 2, (target.height - h) / 2, w, h);
+}
+let lastCheck = { ok: false };
+function render(){
+  const mode = radio('mode');
+  const warns = [], errors = [], chips = [];
+  for(const k of KEYS){
+    const s = S[k];
+    $('drop-' + k).querySelector('[data-role=name]').textContent = s ? s.label : 'Choose or drop a file';
+    $('drop-' + k).querySelector('[data-role=sub]').textContent = s ? (s.vector ? 'SVG · vector' : `${s.natural.w} × ${s.natural.h} px`) : (k === 'light' ? 'Dark-coloured logo · PNG, JPG, WebP, SVG' : 'Light-coloured logo · PNG, JPG, WebP, SVG');
+    $('drop-' + k).querySelector('[data-role=thumb]').style.backgroundImage = s && s.clean ? `url("${s.clean.toDataURL()}")` : 'none';
+    $('rm-' + k).hidden = !s; $('bgbox-' + k).hidden = !s; $('srcv-' + k).hidden = !s;
+    if(s){
+      $('bgon-' + k).checked = s.bg.on; $('inside-' + k).checked = s.bg.inside; $('tol-' + k).value = s.bg.tol; $('tolo-' + k).textContent = s.bg.tol;
+      $('sw-' + k).style.background = hexOf(s.bg.color); $('hex-' + k).textContent = hexOf(s.bg.color).toUpperCase();
+      $('pick-' + k).setAttribute('aria-pressed', String(s.picking)); $('srcv-' + k).classList.toggle('picking', s.picking);
+      const c = $('srcc-' + k), show = s.picking ? s.src : (s.clean || s.src), sc = Math.min(1, 640 / Math.max(show.width, show.height));
+      c.width = Math.max(1, Math.round(show.width * sc)); c.height = Math.max(1, Math.round(show.height * sc)); drawContain(c, show);
+      $('srcv-' + k).querySelector('.lr-tag').textContent = s.picking ? 'Click the background colour' : (s.bg.on ? 'Background removed' : 'Original');
+      // a dark logo belongs in the light-mode slot and vice versa
+      const L = s.clean ? lightness(s.clean) : .5, wrong = (k === 'light' && L > .72) || (k === 'dark' && L < .28);
+      $('swapbox-' + k).hidden = !wrong || !!S[OTHER[k]];
+      if(!s.clean) errors.push(`The ${k}-mode logo is empty after removing the background. Lower the tolerance or turn off “Inside shapes too”.`);
+      if(s.bg.on && s.uniform < .55 && s.opaque > .6) warns.push(`The ${k}-mode logo has a busy background (gradient or photo). The removal may leave bits behind; a PNG with a transparent background works best.`);
+    }
+  }
+  // final outputs
+  const have = KEYS.filter(k => S[k] && S[k].clean);
+  for(const k of KEYS){
+    let srcC = null, generated = false;
+    if(S[k] && S[k].clean) srcC = S[k].clean;
+    else if(S[OTHER[k]] && S[OTHER[k]].clean){ srcC = convert(S[OTHER[k]].clean, mode, k); generated = true; }
+    $('gen-' + k).hidden = !generated;
+    const bg = $('bg-' + k).value; $('tile-' + k).style.background = bg; $('tile-' + k).style.color = lum(bg) > .4 ? '#0f172a' : '#f4f4f5';
+    if(srcC){
+      const f = fit(srcC, W, H); OUT[k] = f.canvas;
+      const o = $('out-' + k); o.getContext('2d').clearRect(0, 0, W, H); o.getContext('2d').drawImage(f.canvas, 0, 0);
+      const owner = S[k] && S[k].clean ? S[k] : S[OTHER[k]];
+      if(f.scale > 1.05 && owner && !owner.vector) warns.push(`The ${k}-mode logo is smaller than 124 × 82 and is enlarged ${f.scale.toFixed(1)}×, so it may look soft. Find a bigger file or an SVG.`);
+      const Lout = lightness(f.canvas), contrast = Math.abs(Lout - (lum(bg) > .4 ? 1 : 0.07));
+      if(contrast < .3) warns.push(`The ${k}-mode logo has low contrast against its background. Try another colour conversion, or upload that version yourself.`);
+      chips.push([k === 'light' ? 'Light' : 'Dark', `${f.tw} × ${f.th} in 124 × 82${generated ? ' · generated' : ''}`, 'ok']);
+    } else { OUT[k] = null; { const c = $('out-' + k); c.getContext('2d').clearRect(0, 0, c.width, c.height); } }
+  }
+  if(!have.length) errors.push('Upload a logo (light-mode, dark-mode or both).');
+  chips.unshift(['Size', '124 × 82', 'ok']);
+  $('qa').replaceChildren(...chips.map(([k, v, c]) => { const el = document.createElement('span'); el.className = 'chip ' + c; const bb = document.createElement('b'); bb.textContent = k; el.append(bb, ' ' + v); return el; }));
+  $('msgs').replaceChildren(...[...errors.map(x => [x, 'bad']), ...warns.map(x => [x, 'warn'])].map(([x, c]) => { const li = document.createElement('li'); li.className = c; li.textContent = x; return li; }));
+  lastCheck = { ok: !errors.length };
+  $('btn-dl-light').disabled = !(lastCheck.ok && OUT.light); $('btn-dl-dark').disabled = !(lastCheck.ok && OUT.dark);
+}
+
+/* ---------- export ---------- */
+async function renderPNG(which){
+  const c = OUT[which || 'light']; if(!c) throw new Error('empty');
+  const blob = await new Promise((res, rej) => c.toBlob(b => b ? res(b) : rej(new Error('export')), 'image/png'));
+  if(c.width !== W || c.height !== H) throw new Error('size');
+  return blob;
+}
+(window.__banner = window.__banner || {})[P.slice(0, -1)] = { renderPNG, render };
+
+let downloads = null; const inViewer = !!(window.claude && window.claude.use);
+if(inViewer) window.claude.use('downloads').then(d => { downloads = d; }).catch(() => {});
+function setStatus(t, bad){ const s = $('status'); s.textContent = t; s.style.color = bad ? 'var(--bad)' : ''; }
+async function download(k){
+  const btn = $('btn-dl-' + k), name = ($('in-name').value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'logo') + `-${k}.png`;
+  btn.disabled = true;
+  try{
+    const blob = await renderPNG(k);
+    if(downloads){
+      try{ await downloads.save({ filename: name, data: blob }); setStatus(`Saved ${name} (124 × 82).`); }
+      catch(e){ setStatus(e && e.code === 'declined' ? 'Download cancelled.' : 'Saving is not available here. Open the HTML file in Chrome to download.', e && e.code !== 'declined'); }
+    } else if(inViewer){ setStatus('Saving is not available in this view. Open the HTML file in Chrome to download.', true); }
+    else { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); setStatus(`Downloaded ${name} (124 × 82).`); }
+  } catch(e){ setStatus('The PNG could not be created in this browser. Use Chrome or Edge.', true); }
+  finally{ btn.disabled = !(lastCheck.ok && OUT[k]); }
+}
+$('btn-dl-light').addEventListener('click', () => download('light'));
+$('btn-dl-dark').addEventListener('click', () => download('dark'));
+['bg-light', 'bg-dark'].forEach(id => $(id).addEventListener('input', render));
+ROOT.querySelectorAll('input[type=radio]').forEach(r => r.addEventListener('change', render));
+render();
+})();
+</script>
+<script>
 /* ---------- Provider logos from the GitHub repo ----------
    On GitHub Pages the tool finds the "provider logos" folder that sits next to this page (owner and repo
    are taken from the page address) and uses those files in every provider dropdown.
@@ -3043,11 +3421,11 @@ draw();
   tabs.forEach((t, i) => {
     t.addEventListener('click', () => show(t));  // resolved at call time, so the site check below applies
     t.addEventListener('keydown', e => {
-      const k = e.key, n = tabs.length;
-      if(k === 'ArrowDown' || k === 'ArrowRight'){ e.preventDefault(); show(tabs[(i + 1) % n], true); }
-      else if(k === 'ArrowUp' || k === 'ArrowLeft'){ e.preventDefault(); show(tabs[(i + n - 1) % n], true); }
-      else if(k === 'Home'){ e.preventDefault(); show(tabs[0], true); }
-      else if(k === 'End'){ e.preventDefault(); show(tabs[n - 1], true); }
+      const k = e.key, vis = tabs.filter(x => x.dataset.site === t.dataset.site), j = vis.indexOf(t), n = vis.length;
+      if(k === 'ArrowDown' || k === 'ArrowRight'){ e.preventDefault(); show(vis[(j + 1) % n], true); }
+      else if(k === 'ArrowUp' || k === 'ArrowLeft'){ e.preventDefault(); show(vis[(j + n - 1) % n], true); }
+      else if(k === 'Home'){ e.preventDefault(); show(vis[0], true); }
+      else if(k === 'End'){ e.preventDefault(); show(vis[n - 1], true); }
     });
   });
   // collapsible sidebar (remembered per browser) and a drawer on small screens
@@ -3063,23 +3441,27 @@ draw();
   document.addEventListener('keydown', e => { if(e.key === 'Escape' && shell.classList.contains('drawer')) drawer(false); });
   // eyebrow above each page title: site · section
   tabs.forEach(t => { const top = document.querySelector('#' + t.getAttribute('aria-controls') + ' .top');
-    if(top && !top.querySelector('.eyebrow')){ const e = document.createElement('span'); e.className = 'eyebrow'; e.textContent = 'Chipy · ' + t.dataset.group; top.prepend(e); } });
+    const siteName = { chipy: 'Chipy', mate: 'Mate', freak: 'Freak', tools: 'General Tools' }[t.dataset.site] || 'Chipy';
+    if(top && !top.querySelector('.eyebrow')){ const e = document.createElement('span'); e.className = 'eyebrow'; e.textContent = siteName + ' · ' + t.dataset.group; top.prepend(e); } });
 
   // site picker: Chipy has the banner menus; the other sites are not set up yet
-  const SITES = { chipy: 'Chipy', mate: 'Mate', freak: 'Freak' };
+  const SITES = { chipy: 'Chipy', mate: 'Mate', freak: 'Freak', tools: 'General Tools' };
   const pick = document.getElementById('site-pick'), btn = document.getElementById('site-btn'), list = document.getElementById('site-list');
   const opts = [...list.querySelectorAll('[role=option]')], nav = document.querySelector('.side .tabs'), soon = document.getElementById('soon');
-  let site = 'chipy', current = null, active = 0;
+  let site = 'chipy', current = null, active = 0; const lastTab = {};
+  const groups = [...document.querySelectorAll('.side .nav-group')];
   function setSite(k, keepFocus){
     site = SITES[k] ? k : 'chipy'; store.set('pr-studio-site', site); document.documentElement.dataset.site = site;
     opts.forEach(o => o.setAttribute('aria-selected', String(o.dataset.site === site)));
     document.getElementById('site-name').textContent = SITES[site];
     const ava = document.getElementById('site-ava'), src = document.querySelector(`#site-${site} .site-ava`);
     ava.dataset.site = site; ava.textContent = src.textContent;
-    const ready = site === 'chipy';
+    document.getElementById('site-kicker').textContent = site === 'tools' ? 'Workspace' : 'Banners for';
+    groups.forEach(g => g.hidden = g.dataset.site !== site);
+    const mine = tabs.filter(t => t.dataset.site === site), ready = mine.length > 0;
     nav.hidden = !ready; soon.hidden = ready;
     document.getElementById('soon-note').textContent = ready ? '' : `Banners for ${SITES[site]} are not set up yet.`;
-    if(ready) show(current || tabs[0]);
+    if(ready) show(lastTab[site] || (current && current.dataset.site === site ? current : mine[0]));
     else { tabs.forEach(t => document.getElementById(t.getAttribute('aria-controls')).hidden = true); document.title = SITES[site] + ' · PR Studio'; }
     if(!keepFocus) drawer(false);
   }
@@ -3118,11 +3500,12 @@ draw();
   setTheme(document.documentElement.dataset.theme === 'light' ? 'light' : 'dark');
 
   const _show = show;
-  show = (tab, focus) => { current = tab; if(site === 'chipy') _show(tab, focus); };
+  show = (tab, focus) => { current = tab; lastTab[tab.dataset.site] = tab; if(tab.dataset.site === site) _show(tab, focus); };
   const start = tabs.find(t => '#' + t.dataset.hash === location.hash) || tabs[0];
   current = start;
-  setSite(store.get('pr-studio-site') || 'chipy', true);
-  window.addEventListener('hashchange', () => { const t = tabs.find(x => '#' + x.dataset.hash === location.hash); if(t && (t.getAttribute('aria-selected') !== 'true' || site !== 'chipy')){ if(site !== 'chipy') setSite('chipy', true); show(t); } });
+  const saved = store.get('pr-studio-site') || 'chipy';
+  setSite(location.hash && start.dataset.site ? start.dataset.site : saved, true);
+  window.addEventListener('hashchange', () => { const t = tabs.find(x => '#' + x.dataset.hash === location.hash); if(t && (t.getAttribute('aria-selected') !== 'true' || site !== t.dataset.site)){ lastTab[t.dataset.site] = t; if(site !== t.dataset.site) setSite(t.dataset.site, true); else show(t); } });
 })();
 </script>
 <!--
